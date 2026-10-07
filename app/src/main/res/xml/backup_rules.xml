@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   REM-007 — auto-backup rules (applies to API 23–30).
+   Exclude every SharedPreferences file the app writes; the vault and the
+   vault-id holder both live in this domain. Files that legitimately need to
+   ride the backup (none currently) can be re-included individually.
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="."/>
+    <exclude domain="file" path="."/>
+</full-backup-content>

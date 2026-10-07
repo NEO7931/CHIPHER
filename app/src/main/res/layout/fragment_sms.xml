@@ -1,0 +1,783 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- ══ LEGACY TAB BUTTONS — hidden, IDs kept so Kotlin binding doesn't crash ══ -->
+    <LinearLayout
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#1976D2"
+        android:visibility="gone">
+        <Button android:id="@+id/btnTabInbox" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"/>
+        <Button android:id="@+id/btnTabScanner" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"/>
+        <Button android:id="@+id/btnTabQuarantine" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"/>
+        <Button android:id="@+id/btnTabHistory" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"/>
+    </LinearLayout>
+
+    <!-- ══ V7: TOP BAR — Bell notification ════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#0D47A1"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SMS SHIELD"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"/>
+
+        <FrameLayout
+            android:id="@+id/bellContainer"
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <ImageButton
+                android:id="@+id/btnBell"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/stat_notify_chat"
+                app:tint="#FFFFFF"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Notifications"/>
+
+            <TextView
+                android:id="@+id/tvBellBadge"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/circle_background"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- ══ V7: CATEGORY DRAWER HEADER — tap to expand ═════════════════ -->
+    <LinearLayout
+        android:id="@+id/drawerHeader"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#1565C0"
+        android:paddingStart="16dp"
+        android:paddingEnd="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/tvDrawerActiveLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📥  Inbox"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvDrawerActiveBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/circle_background"
+            android:gravity="center"
+            android:minWidth="22dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/ivDrawerChevron"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▼"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- ══ V7: DRAWER CONTENT — GONE by default, expands on header tap ══ -->
+    <LinearLayout
+        android:id="@+id/drawerContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#1A3D7A"
+        android:visibility="gone">
+
+        <!-- Inbox row -->
+        <LinearLayout android:id="@+id/drawerRowInbox"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="📥  Inbox"
+                android:textColor="#FFFFFF" android:textSize="14sp"/>
+            <TextView android:id="@+id/drawerBadgeInbox"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:paddingStart="6dp" android:paddingEnd="6dp"
+                android:paddingTop="2dp" android:paddingBottom="2dp"
+                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#33FFFFFF"/>
+
+        <!-- Scams row -->
+        <LinearLayout android:id="@+id/drawerRowScams"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="⚠️  Scams"
+                android:textColor="#FFCCBC" android:textSize="14sp"/>
+            <TextView android:id="@+id/drawerBadgeScams"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:paddingStart="6dp" android:paddingEnd="6dp"
+                android:paddingTop="2dp" android:paddingBottom="2dp"
+                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#33FFFFFF"/>
+
+        <!-- Banking row -->
+        <LinearLayout android:id="@+id/drawerRowBanking"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="🏦  Banking"
+                android:textColor="#B2EBF2" android:textSize="14sp"/>
+            <TextView android:id="@+id/drawerBadgeBanking"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:paddingStart="6dp" android:paddingEnd="6dp"
+                android:paddingTop="2dp" android:paddingBottom="2dp"
+                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#33FFFFFF"/>
+
+        <!-- Scanner row -->
+        <LinearLayout android:id="@+id/drawerRowScanner"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="🔍  Scanner"
+                android:textColor="#B3E5FC" android:textSize="14sp"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#33FFFFFF"/>
+
+        <!-- Q-Zone row -->
+        <LinearLayout android:id="@+id/drawerRowQZone"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="🔒  Q-Zone"
+                android:textColor="#E1BEE7" android:textSize="14sp"/>
+            <TextView android:id="@+id/drawerBadgeQZone"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                android:paddingStart="6dp" android:paddingEnd="6dp"
+                android:paddingTop="2dp" android:paddingBottom="2dp"
+                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#33FFFFFF"/>
+
+        <!-- History row -->
+        <LinearLayout android:id="@+id/drawerRowHistory"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="📋  History"
+                android:textColor="#C8E6C9" android:textSize="14sp"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#55FFFFFF"/>
+
+        <!-- Safe Export row -->
+        <LinearLayout android:id="@+id/drawerRowSafeExport"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:clickable="true" android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="🧹  Safe Export"
+                android:textColor="#FFCDD2" android:textSize="14sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ══ INBOX PANEL ════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelInbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/tvInboxCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="📥 Inbox"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvInboxLegend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:text="🟢 LOW   🟡 MEDIUM   🔴 HIGH   🔒 QUARANTINED"
+            android:textColor="#888888"
+            android:textSize="11sp"/>
+
+        <!-- ─── Inbox filter tabs — three-tier trust grouping ─── -->
+        <LinearLayout
+            android:id="@+id/llInboxFilterTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="6dp">
+
+            <TextView
+                android:id="@+id/tabFilterContacts"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="#2E7D32"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="👤 Contacts"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/tabFilterCompanies"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="#FFC107"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="🏛 Companies"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/tabFilterUnknown"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="#D32F2F"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="❓ Unknown"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/llInboxList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"/>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- ══ V7: SCAMS PANEL — permanent, Auto-QZ independent ══════════ -->
+    <LinearLayout
+        android:id="@+id/panelScams"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="#1AFF5252">
+
+            <TextView
+                android:id="@+id/tvScamsCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="⚠️ Scams — 0 flagged"
+                android:textColor="#D32F2F"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="Flagged messages regardless of Auto-Quarantine setting."
+            android:textColor="#888888"
+            android:textSize="12sp"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvScamsPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="32dp"
+                    android:text="⚠️ No flagged messages\n\nMessages scored MEDIUM or HIGH risk will appear here."
+                    android:textAlignment="center"
+                    android:textColor="#888888"
+                    android:textSize="14sp"
+                    android:visibility="visible"/>
+
+                <LinearLayout
+                    android:id="@+id/llScamsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
+    <!-- ══ V7: BANKING PANEL — verified senders only ══════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelBanking"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="#1A1565C0">
+
+            <TextView
+                android:id="@+id/tvBankingCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏦 Banking — 0 messages"
+                android:textColor="#1565C0"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="Messages from verified banks, e-wallets, and financial senders only. Numeric senders are excluded."
+            android:textColor="#888888"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp"
+            android:text="⚠️ Always verify OTPs by calling your bank directly. Never share codes via SMS."
+            android:textColor="#E65100"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvBankingPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="32dp"
+                    android:text="🏦 No messages from verified financial senders\n\nMessages from your bank, GCash, Maya, and other verified senders will appear here."
+                    android:textAlignment="center"
+                    android:textColor="#888888"
+                    android:textSize="14sp"
+                    android:visibility="visible"/>
+
+                <LinearLayout
+                    android:id="@+id/llBankingList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- ══ SCANNER PANEL ══════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelScanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- Scan Button -->
+                <Button
+                    android:id="@+id/btnScanSms"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="🔍 SCAN MY SMS"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <!-- Auto-Quarantine Card — replaces old cardAutoDelete -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAutoQuarantine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="🔒 Auto-Quarantine HIGH Risk"
+                                android:textColor="@android:color/black"
+                                android:textSize="15sp"
+                                android:textStyle="bold"/>
+
+                            <Switch
+                                android:id="@+id/switchAutoQuarantine"
+                                android:layout_width="wrap_content"
+                                android:layout_height="48dp"
+                                android:minHeight="48dp"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvAutoQuarantineStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="OFF — HIGH risk messages will not be quarantined"
+                            android:textColor="#888888"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Scan Summary Bar -->
+                <TextView
+                    android:id="@+id/tvScanSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+
+                <!-- AI Status Row — visible while Gemini is analyzing or after a verdict -->
+                <LinearLayout
+                    android:id="@+id/llAiStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#F0F4FF"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:id="@+id/aiLoadingBar"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:id="@+id/tvAiStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""
+                        android:textColor="#1A237E"
+                        android:textSize="13sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Placeholder -->
+                <TextView
+                    android:id="@+id/tvSmsPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp"
+                    android:text="Tap SCAN MY SMS to analyze your messages"
+                    android:textAlignment="center"
+                    android:textColor="#888888"
+                    android:textSize="14sp"
+                    android:visibility="visible"/>
+
+                <!-- Scan Results -->
+                <LinearLayout
+                    android:id="@+id/llScanResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- ══ Q-ZONE PANEL ═══════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelQuarantine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            android:background="#1A9C27B0">
+
+            <TextView
+                android:id="@+id/tvQuarantineCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🔒 0 quarantined messages"
+                android:textColor="#9C27B0"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btnDeleteAllQuarantine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FF5252"
+                android:enabled="false"
+                android:text="🗑️ DELETE ALL"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="HIGH risk messages are isolated here. Review before permanently deleting."
+            android:textColor="#888888"
+            android:textSize="12sp"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvQuarantinePlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="32dp"
+                    android:text="🔒 No quarantined messages\n\nEnable Auto-Quarantine in the SCANNER tab to automatically isolate HIGH risk messages."
+                    android:textAlignment="center"
+                    android:textColor="#888888"
+                    android:textSize="14sp"
+                    android:visibility="visible"/>
+
+                <LinearLayout
+                    android:id="@+id/llQuarantineList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- ══ HISTORY PANEL ══════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelHistory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvHistoryCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📋 History"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btnClearHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🗑️ CLEAR ALL"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/llHistoryList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"/>
+        </ScrollView>
+    </LinearLayout>
+
+
+    <!-- ══ CONVERSATION PANEL ═══════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/panelConversation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"/>
+
+</LinearLayout>

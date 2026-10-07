@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   REM-007 — applies to API 31+. Both cloud backup AND device-to-device
+   transfer are explicitly locked down.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="."/>
+        <exclude domain="file" path="."/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="."/>
+        <exclude domain="file" path="."/>
+    </device-transfer>
+</data-extraction-rules>

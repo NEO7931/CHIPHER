@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_sms"
+        android:icon="@android:drawable/ic_dialog_email"
+        android:title="SMS Scan"/>
+
+    <item
+        android:id="@+id/nav_vault"
+        android:icon="@android:drawable/ic_lock_lock"
+        android:title="Vault"/>
+
+    <item
+        android:id="@+id/nav_network"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Network"/>
+
+    <item
+        android:id="@+id/nav_coach"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="Help Desk"/>
+
+    <item
+        android:id="@+id/nav_report"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Report"/>
+
+</menu>

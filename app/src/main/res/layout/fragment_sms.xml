@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cipher_background"
     android:orientation="vertical">
 
     <!-- ══ LEGACY TAB BUTTONS — hidden, IDs kept so Kotlin binding doesn't crash ══ -->
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal"
-        android:background="#1976D2"
+        android:background="@color/cipher_primary_dark"
         android:visibility="gone">
         <Button android:id="@+id/btnTabInbox" android:layout_width="0dp"
             android:layout_height="match_parent" android:layout_weight="1"/>
@@ -31,7 +32,7 @@
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#0D47A1"
+        android:background="@color/cipher_background"
         android:paddingStart="16dp"
         android:paddingEnd="8dp">
 
@@ -39,8 +40,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableStart="@drawable/ic_shield"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/cipher_primary"
             android:text="SMS SHIELD"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/cipher_text_primary"
             android:textSize="14sp"
             android:textStyle="bold"
             android:letterSpacing="0.1"/>
@@ -55,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@android:drawable/stat_notify_chat"
-                app:tint="#FFFFFF"
+                app:tint="@color/cipher_text_primary"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Notifications"/>
 
@@ -68,7 +72,7 @@
                 android:layout_marginEnd="4dp"
                 android:background="@drawable/circle_background"
                 android:gravity="center"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/cipher_text_primary"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:visibility="gone"/>
@@ -82,7 +86,7 @@
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#1565C0"
+        android:background="@color/cipher_surface_high"
         android:paddingStart="16dp"
         android:paddingEnd="12dp"
         android:clickable="true"
@@ -94,8 +98,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="📥  Inbox"
-            android:textColor="#FFFFFF"
+            android:text="Inbox"
+            android:textColor="@color/cipher_text_primary"
             android:textSize="15sp"
             android:textStyle="bold"/>
 
@@ -111,7 +115,7 @@
             android:paddingEnd="6dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/cipher_text_primary"
             android:textSize="11sp"
             android:textStyle="bold"
             android:visibility="gone"/>
@@ -121,7 +125,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="▼"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/cipher_text_primary"
             android:textSize="14sp"/>
     </LinearLayout>
 
@@ -131,7 +135,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#1A3D7A"
+        android:background="@color/cipher_surface"
         android:visibility="gone">
 
         <!-- Inbox row -->
@@ -142,18 +146,18 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="📥  Inbox"
-                android:textColor="#FFFFFF" android:textSize="14sp"/>
+                android:layout_weight="1" android:text="Inbox"
+                android:textColor="@color/cipher_text_primary" android:textSize="14sp"/>
             <TextView android:id="@+id/drawerBadgeInbox"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:background="@drawable/circle_background"
                 android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingTop="2dp" android:paddingBottom="2dp"
-                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:textColor="@color/cipher_text_primary" android:textSize="11sp"
                 android:visibility="gone"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#33FFFFFF"/>
+            android:background="@color/cipher_outline_soft"/>
 
         <!-- Scams row -->
         <LinearLayout android:id="@+id/drawerRowScams"
@@ -163,18 +167,18 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="⚠️  Scams"
-                android:textColor="#FFCCBC" android:textSize="14sp"/>
+                android:layout_weight="1" android:text="Scams"
+                android:textColor="@color/cipher_danger" android:textSize="14sp"/>
             <TextView android:id="@+id/drawerBadgeScams"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:background="@drawable/circle_background"
                 android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingTop="2dp" android:paddingBottom="2dp"
-                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:textColor="@color/cipher_text_primary" android:textSize="11sp"
                 android:visibility="gone"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#33FFFFFF"/>
+            android:background="@color/cipher_outline_soft"/>
 
         <!-- Banking row -->
         <LinearLayout android:id="@+id/drawerRowBanking"
@@ -184,18 +188,18 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="🏦  Banking"
-                android:textColor="#B2EBF2" android:textSize="14sp"/>
+                android:layout_weight="1" android:text="Banking"
+                android:textColor="@color/cipher_primary" android:textSize="14sp"/>
             <TextView android:id="@+id/drawerBadgeBanking"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:background="@drawable/circle_background"
                 android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingTop="2dp" android:paddingBottom="2dp"
-                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:textColor="@color/cipher_text_primary" android:textSize="11sp"
                 android:visibility="gone"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#33FFFFFF"/>
+            android:background="@color/cipher_outline_soft"/>
 
         <!-- Scanner row -->
         <LinearLayout android:id="@+id/drawerRowScanner"
@@ -205,11 +209,11 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="🔍  Scanner"
-                android:textColor="#B3E5FC" android:textSize="14sp"/>
+                android:text="Scanner"
+                android:textColor="@color/cipher_info" android:textSize="14sp"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#33FFFFFF"/>
+            android:background="@color/cipher_outline_soft"/>
 
         <!-- Q-Zone row -->
         <LinearLayout android:id="@+id/drawerRowQZone"
@@ -219,18 +223,18 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="🔒  Q-Zone"
-                android:textColor="#E1BEE7" android:textSize="14sp"/>
+                android:layout_weight="1" android:text="Q-Zone"
+                android:textColor="@color/cipher_warning" android:textSize="14sp"/>
             <TextView android:id="@+id/drawerBadgeQZone"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:background="@drawable/circle_background"
                 android:paddingStart="6dp" android:paddingEnd="6dp"
                 android:paddingTop="2dp" android:paddingBottom="2dp"
-                android:textColor="#FFFFFF" android:textSize="11sp"
+                android:textColor="@color/cipher_text_primary" android:textSize="11sp"
                 android:visibility="gone"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#33FFFFFF"/>
+            android:background="@color/cipher_outline_soft"/>
 
         <!-- History row -->
         <LinearLayout android:id="@+id/drawerRowHistory"
@@ -240,11 +244,11 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="📋  History"
-                android:textColor="#C8E6C9" android:textSize="14sp"/>
+                android:text="History"
+                android:textColor="@color/cipher_success" android:textSize="14sp"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#55FFFFFF"/>
+            android:background="@color/cipher_outline"/>
 
         <!-- Safe Export row -->
         <LinearLayout android:id="@+id/drawerRowSafeExport"
@@ -254,8 +258,8 @@
             android:clickable="true" android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="🧹  Safe Export"
-                android:textColor="#FFCDD2" android:textSize="14sp"/>
+                android:text="Safe Export"
+                android:textColor="@color/cipher_danger" android:textSize="14sp"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -273,7 +277,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:text="📥 Inbox"
+            android:text="Inbox"
             android:textSize="15sp"
             android:textStyle="bold"/>
 
@@ -284,8 +288,8 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="8dp"
-            android:text="🟢 LOW   🟡 MEDIUM   🔴 HIGH   🔒 QUARANTINED"
-            android:textColor="#888888"
+            android:text="LOW   MEDIUM   HIGH   QUARANTINED"
+            android:textColor="@color/cipher_text_muted"
             android:textSize="11sp"/>
 
         <!-- ─── Inbox filter tabs — three-tier trust grouping ─── -->
@@ -304,11 +308,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:background="#2E7D32"
+                android:background="@color/cipher_success_container"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="👤 Contacts"
-                android:textColor="#FFFFFF"
+                android:text="Contacts"
+                android:textColor="@color/cipher_text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:clickable="true"
@@ -321,11 +325,11 @@
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:background="#FFC107"
+                android:background="@color/cipher_warning_container"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="🏛 Companies"
-                android:textColor="#FFFFFF"
+                android:text="Companies"
+                android:textColor="@color/cipher_text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:clickable="true"
@@ -337,11 +341,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:background="#D32F2F"
+                android:background="@color/cipher_danger"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="❓ Unknown"
-                android:textColor="#FFFFFF"
+                android:text="Unknown"
+                android:textColor="@color/cipher_text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:clickable="true"
@@ -375,15 +379,15 @@
             android:orientation="horizontal"
             android:padding="12dp"
             android:gravity="center_vertical"
-            android:background="#1AFF5252">
+            android:background="@color/cipher_danger_container">
 
             <TextView
                 android:id="@+id/tvScamsCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="⚠️ Scams — 0 flagged"
-                android:textColor="#D32F2F"
+                android:text="Scams — 0 flagged"
+                android:textColor="@color/cipher_danger"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -396,7 +400,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="Flagged messages regardless of Auto-Quarantine setting."
-            android:textColor="#888888"
+            android:textColor="@color/cipher_text_muted"
             android:textSize="12sp"/>
 
         <ScrollView
@@ -413,9 +417,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="32dp"
-                    android:text="⚠️ No flagged messages\n\nMessages scored MEDIUM or HIGH risk will appear here."
+                    android:text="No flagged messages\n\nMessages scored MEDIUM or HIGH risk will appear here."
                     android:textAlignment="center"
-                    android:textColor="#888888"
+                    android:textColor="@color/cipher_text_muted"
                     android:textSize="14sp"
                     android:visibility="visible"/>
 
@@ -443,15 +447,15 @@
             android:orientation="horizontal"
             android:padding="12dp"
             android:gravity="center_vertical"
-            android:background="#1A1565C0">
+            android:background="@color/cipher_info_container">
 
             <TextView
                 android:id="@+id/tvBankingCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🏦 Banking — 0 messages"
-                android:textColor="#1565C0"
+                android:text="Banking — 0 messages"
+                android:textColor="@color/cipher_surface_high"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -464,7 +468,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="Messages from verified banks, e-wallets, and financial senders only. Numeric senders are excluded."
-            android:textColor="#888888"
+            android:textColor="@color/cipher_text_muted"
             android:textSize="12sp"/>
 
         <TextView
@@ -473,8 +477,8 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="6dp"
-            android:text="⚠️ Always verify OTPs by calling your bank directly. Never share codes via SMS."
-            android:textColor="#E65100"
+            android:text="Always verify OTPs by calling your bank directly. Never share codes via SMS."
+            android:textColor="@color/cipher_warning"
             android:textSize="12sp"
             android:textStyle="bold"/>
 
@@ -492,9 +496,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="32dp"
-                    android:text="🏦 No messages from verified financial senders\n\nMessages from your bank, GCash, Maya, and other verified senders will appear here."
+                    android:text="No messages from verified financial senders\n\nMessages from your bank, GCash, Maya, and other verified senders will appear here."
                     android:textAlignment="center"
-                    android:textColor="#888888"
+                    android:textColor="@color/cipher_text_muted"
                     android:textSize="14sp"
                     android:visibility="visible"/>
 
@@ -531,7 +535,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginBottom="12dp"
-                    android:text="🔍 SCAN MY SMS"
+                    android:text="SCAN MY SMS"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
@@ -543,7 +547,7 @@
                     android:layout_marginBottom="12dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="4dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/cipher_surface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -561,7 +565,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="🔒 Auto-Quarantine HIGH Risk"
+                                android:text="Auto-Quarantine HIGH Risk"
                                 android:textColor="@android:color/black"
                                 android:textSize="15sp"
                                 android:textStyle="bold"/>
@@ -579,7 +583,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="OFF — HIGH risk messages will not be quarantined"
-                            android:textColor="#888888"
+                            android:textColor="@color/cipher_text_muted"
                             android:textSize="13sp"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -604,7 +608,7 @@
                     android:gravity="center_vertical"
                     android:padding="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="#F0F4FF"
+                    android:background="@color/cipher_surface_high"
                     android:visibility="gone">
 
                     <ProgressBar
@@ -621,7 +625,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text=""
-                        android:textColor="#1A237E"
+                        android:textColor="@color/cipher_text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
@@ -634,7 +638,7 @@
                     android:padding="24dp"
                     android:text="Tap SCAN MY SMS to analyze your messages"
                     android:textAlignment="center"
-                    android:textColor="#888888"
+                    android:textColor="@color/cipher_text_muted"
                     android:textSize="14sp"
                     android:visibility="visible"/>
 
@@ -663,15 +667,15 @@
             android:orientation="horizontal"
             android:padding="12dp"
             android:gravity="center_vertical"
-            android:background="#1A9C27B0">
+            android:background="@color/cipher_warning_container">
 
             <TextView
                 android:id="@+id/tvQuarantineCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🔒 0 quarantined messages"
-                android:textColor="#9C27B0"
+                android:text="0 quarantined messages"
+                android:textColor="@color/cipher_warning"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
 
@@ -679,10 +683,10 @@
                 android:id="@+id/btnDeleteAllQuarantine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#FF5252"
+                android:backgroundTint="@color/cipher_danger"
                 android:enabled="false"
-                android:text="🗑️ DELETE ALL"
-                android:textColor="#FFFFFF"
+                android:text="DELETE ALL"
+                android:textColor="@color/cipher_text_primary"
                 android:textSize="12sp"/>
         </LinearLayout>
 
@@ -694,7 +698,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="HIGH risk messages are isolated here. Review before permanently deleting."
-            android:textColor="#888888"
+            android:textColor="@color/cipher_text_muted"
             android:textSize="12sp"/>
 
         <ScrollView
@@ -712,9 +716,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="32dp"
-                    android:text="🔒 No quarantined messages\n\nEnable Auto-Quarantine in the SCANNER tab to automatically isolate HIGH risk messages."
+                    android:text="No quarantined messages\n\nEnable Auto-Quarantine in the SCANNER tab to automatically isolate HIGH risk messages."
                     android:textAlignment="center"
-                    android:textColor="#888888"
+                    android:textColor="@color/cipher_text_muted"
                     android:textSize="14sp"
                     android:visibility="visible"/>
 
@@ -747,7 +751,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="📋 History"
+                android:text="History"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
 
@@ -755,7 +759,7 @@
                 android:id="@+id/btnClearHistory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🗑️ CLEAR ALL"
+                android:text="CLEAR ALL"
                 android:textSize="12sp"/>
         </LinearLayout>
 

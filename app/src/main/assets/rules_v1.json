@@ -4,7 +4,7 @@
     "pattern": "gcash.{0,30}(transfer|send|padala).{0,30}otp|otp.{0,30}gcash.{0,30}transfer",
     "description": "GCash OTP transfer pattern",
     "weight": 30,
-    "category": "💳 Financial Fraud",
+    "category": "Financial Fraud",
     "source": "BSP Advisory 2022-058",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -14,7 +14,7 @@
     "pattern": "maya.{0,30}(transfer|send).{0,30}now|transfer.{0,30}maya.{0,30}account",
     "description": "Maya urgent transfer pattern",
     "weight": 30,
-    "category": "💳 Financial Fraud",
+    "category": "Financial Fraud",
     "source": "BSP Advisory 2022-058",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -24,7 +24,7 @@
     "pattern": "https?://[^\\s]{0,80}\\.(online|xyz|site|click|live|info|tk)(\\s|/|$)",
     "description": "Suspicious TLD phishing URL",
     "weight": 35,
-    "category": "🔗 Phishing Link",
+    "category": "Phishing Link",
     "source": "NTC Philippines Advisory 2023",
     "language": ["en"],
     "region": ["PH"]
@@ -34,7 +34,7 @@
     "pattern": "(bdo|bpi|metrobank|unionbank|gcash|maya|dswd|sss)-[a-z0-9]+\\.(com|net|org|online|xyz|site)",
     "description": "Hyphenated brand impersonation domain",
     "weight": 40,
-    "category": "🔗 Phishing Link",
+    "category": "Phishing Link",
     "source": "GSMA Fraud Intelligence PH 2023",
     "language": ["en"],
     "region": ["PH"]
@@ -44,7 +44,7 @@
     "pattern": "dswd.{0,30}(cash assistance|ayuda|relief).{0,30}(claim|kunin|available)",
     "description": "DSWD cash assistance scam",
     "weight": 30,
-    "category": "🏛️ Gov't Impersonation",
+    "category": "Gov't Impersonation",
     "source": "DSWD Scam Alert 2023",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -54,7 +54,7 @@
     "pattern": "sss.{0,30}(benefit|loan|contribution).{0,30}(claim|release|process|available)",
     "description": "SSS benefit claim scam",
     "weight": 25,
-    "category": "🏛️ Gov't Impersonation",
+    "category": "Gov't Impersonation",
     "source": "SSS Anti-Fraud Advisory 2023",
     "language": ["en"],
     "region": ["PH"]
@@ -64,7 +64,7 @@
     "pattern": "(nanalo ka|you have won|you.?won).{0,40}(prize|premyo|lotto|jackpot|reward)",
     "description": "Prize win scam pattern",
     "weight": 35,
-    "category": "🎰 Prize Scam",
+    "category": "Prize Scam",
     "source": "GSMA Fraud Intelligence PH 2023",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -74,7 +74,7 @@
     "pattern": "(share|send|type|provide).{0,20}otp|otp.{0,20}(valid|expire|minutes|lang|only)",
     "description": "OTP harvesting pattern",
     "weight": 25,
-    "category": "🔑 Credential Theft",
+    "category": "Credential Theft",
     "source": "BSP Advisory 2023-012",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -84,7 +84,7 @@
     "pattern": "(arrest|warrant|legal action|hulihin|arestuhin).{0,40}(within|24.?hour|48.?hour|immediately|agad)",
     "description": "Legal threat urgency pattern",
     "weight": 35,
-    "category": "⚖️ Legal Threat",
+    "category": "Legal Threat",
     "source": "NTC Philippines Advisory 2022",
     "language": ["en", "tl"],
     "region": ["PH"]
@@ -94,7 +94,7 @@
     "pattern": "your.{0,30}(account|card|payment).{0,30}(suspended|blocked|restricted|compromised|locked)",
     "description": "Account suspension smishing",
     "weight": 25,
-    "category": "🔑 Credential Theft",
+    "category": "Credential Theft",
     "source": "Proofpoint Threat Intelligence Q2 2023",
     "language": ["en"],
     "region": ["PH", "GLOBAL"]
@@ -104,7 +104,7 @@
     "pattern": "(click|tap|visit).{0,20}(link|below|here).{0,40}(verify|confirm|update|secure|validate)",
     "description": "Click-to-verify smishing",
     "weight": 20,
-    "category": "🔗 Phishing Link",
+    "category": "Phishing Link",
     "source": "Proofpoint Threat Intelligence Q2 2023",
     "language": ["en"],
     "region": ["PH", "GLOBAL"]
@@ -114,7 +114,7 @@
     "pattern": "(grocery|food|relief|ayuda).{0,30}voucher.{0,40}(claim|kunin|i-redeem|available|na)",
     "description": "Fake government voucher scam",
     "weight": 30,
-    "category": "🏛️ Gov't Impersonation",
+    "category": "Gov't Impersonation",
     "source": "DSWD Scam Alert 2023",
     "language": ["en", "tl"],
     "region": ["PH"]

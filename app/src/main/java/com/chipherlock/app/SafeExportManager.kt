@@ -1,8 +1,11 @@
 package com.chipherlock.app
 
-import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.net.Uri
+import android.view.LayoutInflater
+import android.view.View
+import com.chipherlock.app.databinding.DialogSafeExportBinding
 
 /**
  * Handles safe export before uninstall:
@@ -119,48 +122,44 @@ object SafeExportManager {
         val totalSms   = countTotalSms(ctx)
         val cleanCount = (totalSms - scamCount).coerceAtLeast(0)
 
-        val message = buildString {
-            append("📊 What will happen:\n\n")
-            append("  🔴 $scamCount scam message(s) → permanently deleted\n")
-            append("  🟢 $cleanCount clean message(s) → preserved on device\n\n")
-            if (!isDefaultSmsApp) {
-                append("⚠️ Set CHIPHERLOCK as your default SMS app first\n")
-                append("to delete scam messages from the phone.\n\n")
-                append("App data (Q-Zone, history, access list) will still\n")
-                append("be cleared regardless.\n\n")
-            }
-            append("After this, you can safely uninstall CHIPHERLOCK.\n")
-            append("All clean messages will be accessible in any SMS app.")
-        }
+        val binding = DialogSafeExportBinding.inflate(LayoutInflater.from(ctx))
+        binding.tvScamCount.text = scamCount.toString()
+        binding.tvCleanCount.text = cleanCount.toString()
+        binding.tvSafeExportWarning.visibility = if (isDefaultSmsApp) View.GONE else View.VISIBLE
 
-        AlertDialog.Builder(ctx)
-            .setTitle("🧹 Safe Export")
-            .setMessage(message)
-            .setPositiveButton("Proceed") { _, _ ->
+        VaultDialogUi.builder(ctx)
+            .setTitle(R.string.safe_export_title)
+            .setView(binding.root)
+            .setPositiveButton(R.string.safe_export_proceed) { _, _ ->
                 val deleted = if (isDefaultSmsApp) deleteScamMessages(ctx) else 0
                 clearAppData(ctx)
 
                 val result = buildString {
                     if (isDefaultSmsApp) {
-                        append("✅ $deleted scam message(s) deleted from device.\n")
+                        append("$deleted scam message(s) deleted from device.\n")
                     } else {
-                        append("⚠️ Scam messages NOT deleted from device\n")
+                        append("Scam messages NOT deleted from device\n")
                         append("(CHIPHERLOCK is not the default SMS app).\n")
                     }
-                    append("✅ App data cleared.\n")
-                    append("✅ $cleanCount clean message(s) preserved.\n\n")
+                    append("App data cleared.\n")
+                    append("$cleanCount clean message(s) preserved.\n\n")
                     append("You can now safely uninstall CHIPHERLOCK.")
                 }
 
-                AlertDialog.Builder(ctx)
-                    .setTitle("✅ Export Complete")
+                VaultDialogUi.builder(ctx)
+                    .setTitle(R.string.safe_export_complete_title)
                     .setMessage(result)
                     .setPositiveButton("OK", null)
                     .setCancelable(false)
-                    .show()
+                    .create()
+                    .also { VaultDialogUi.showStyled(it) }
             }
             .setNegativeButton("Cancel", null)
-            .show()
+            .create()
+            .also { dialog ->
+                VaultDialogUi.showStyled(dialog)
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.setTextColor(CipherPalette.danger)
+            }
     }
 
     // ── First-launch preservation notice ─────────────────────────────────
@@ -175,17 +174,18 @@ object SafeExportManager {
         if (prefs.getBoolean("preservation_notice_shown", false)) return
         prefs.edit().putBoolean("preservation_notice_shown", true).apply()
 
-        AlertDialog.Builder(ctx)
-            .setTitle("✅ Your Messages Are Safe")
+        VaultDialogUi.builder(ctx)
+            .setTitle("Your Messages Are Safe")
             .setMessage(
                 "CHIPHERLOCK is now your default SMS app.\n\n" +
                         "All your existing messages are preserved and untouched. " +
                         "CHIPHERLOCK only reads your SMS to protect you — it never " +
                         "deletes any message without your explicit action.\n\n" +
-                        "When you're ready to uninstall, use the 🧹 Safe Export " +
+                        "When you're ready to uninstall, use the Safe Export " +
                         "option in the drawer to clean up scam messages first."
             )
             .setPositiveButton("Got it", null)
-            .show()
+            .create()
+            .also { VaultDialogUi.showStyled(it) }
     }
 }

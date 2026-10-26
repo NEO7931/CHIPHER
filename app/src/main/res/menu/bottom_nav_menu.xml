@@ -3,27 +3,27 @@
 
     <item
         android:id="@+id/nav_sms"
-        android:icon="@android:drawable/ic_dialog_email"
-        android:title="SMS Scan"/>
+        android:icon="@drawable/ic_shield"
+        android:title="@string/nav_sms"/>
 
     <item
         android:id="@+id/nav_vault"
-        android:icon="@android:drawable/ic_lock_lock"
-        android:title="Vault"/>
+        android:icon="@drawable/ic_vault"
+        android:title="@string/nav_vault"/>
 
     <item
         android:id="@+id/nav_network"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="Network"/>
+        android:icon="@drawable/ic_network"
+        android:title="@string/nav_network"/>
 
     <item
         android:id="@+id/nav_coach"
-        android:icon="@android:drawable/ic_dialog_info"
-        android:title="Help Desk"/>
+        android:icon="@drawable/ic_help"
+        android:title="@string/nav_help"/>
 
     <item
         android:id="@+id/nav_report"
-        android:icon="@android:drawable/ic_menu_agenda"
-        android:title="Report"/>
+        android:icon="@drawable/ic_report"
+        android:title="@string/nav_report"/>
 
 </menu>

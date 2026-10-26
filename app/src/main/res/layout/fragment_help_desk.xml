@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cipher_background"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingTop="16dp"
+        android:paddingEnd="@dimen/screen_padding"
+        android:paddingBottom="12dp">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_shield"
+            app:tint="@color/cipher_primary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help desk"
+                android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Security guidance, on demand"
+                android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Body" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/helpTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cipher_surface"
+        app:tabIndicatorColor="@color/cipher_primary"
+        app:tabIndicatorFullWidth="false"
+        app:tabRippleColor="@color/cipher_primary_container"
+        app:tabSelectedTextColor="@color/cipher_primary"
+        app:tabTextColor="@color/cipher_text_muted" />
+
+    <FrameLayout
+        android:id="@+id/helpTabContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

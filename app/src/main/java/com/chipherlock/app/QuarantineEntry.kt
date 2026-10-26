@@ -55,7 +55,7 @@ data class QuarantineEntry(
                 messageBody = json.optString("messageBody", ""),
                 riskLevel   = json.optString("riskLevel",   "HIGH"),
                 riskScore   = json.optInt   ("riskScore",   60),
-                category    = json.optString("category",    "⚠️ Suspicious"),
+                category    = json.optString("category",    "Suspicious"),
                 timestamp   = json.optLong  ("timestamp",   System.currentTimeMillis()),
                 smsId       = json.optLong  ("smsId",       -1L),
                 factors     = factors

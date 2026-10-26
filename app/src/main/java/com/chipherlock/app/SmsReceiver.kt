@@ -6,7 +6,7 @@ package com.chipherlock.app
 // Changes from Session 7:
 //   • analyzeMessage() now returns ScoreBreakdown instead of AnalysisResult
 //   • Every triggered keyword/rule is recorded as a ScoreFactor
-//   • fireNotification() appends a compact "📊 Score breakdown:" line
+//   • fireNotification() appends a compact "Score breakdown:" line
 //   • saveAlertToHistory() updated to pass factors into ScamHistoryEntry
 // ---------------------------------------------------------------------------
 
@@ -245,7 +245,7 @@ class SmsReceiver : BroadcastReceiver() {
             breakdown.copy(
                 level    = "MEDIUM",
                 total    = 48,
-                category = "🤖 Social Engineering",
+                category = "Social Engineering",
                 factors  = breakdown.factors + ScoreFactor(
                     "Same message body already flagged from another sender", 48
                 )
@@ -605,9 +605,9 @@ class SmsReceiver : BroadcastReceiver() {
         }
 
         val (title, shortText) = when (breakdown.level) {
-            "HIGH"   -> "🚨 HIGH RISK SMS from $sender" to
+            "HIGH"   -> "HIGH RISK SMS from $sender" to
                     "Risk Score: ${breakdown.total}/100 — ${breakdown.category}"
-            "MEDIUM" -> "⚠️ MEDIUM RISK SMS from $sender" to
+            "MEDIUM" -> "MEDIUM RISK SMS from $sender" to
                     "Risk Score: ${breakdown.total}/100 — ${breakdown.category}"
             else     -> "New message from $sender" to body.take(60)
         }
@@ -621,13 +621,13 @@ class SmsReceiver : BroadcastReceiver() {
                     "\"${f.label.removePrefix("\"").substringBefore("\"")
                         .ifBlank { f.label }}\" +${f.points}"
                 }
-            "\n📊 Score breakdown: $top = ${breakdown.total}/100"
+            "\nScore breakdown: $top = ${breakdown.total}/100"
         } else ""
 
         val bigText = when (breakdown.level) {
             "HIGH", "MEDIUM" ->
                 "From: $sender\n${body.take(120)}\n\n" +
-                        "⚠️ ${breakdown.category} detected — Risk Score: ${breakdown.total}/100" +
+                        "${breakdown.category} detected — Risk Score: ${breakdown.total}/100" +
                         compactBreakdown
             else ->
                 body

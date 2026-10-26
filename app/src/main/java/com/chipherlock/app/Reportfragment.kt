@@ -53,15 +53,8 @@ class ReportFragment : Fragment() {
     ): View {
         val ctx    = requireContext()
         val dp     = ctx.resources.displayMetrics.density
-        val scroll = ScrollView(ctx).apply {
-            setBackgroundColor(Color.parseColor("#F0F4F8"))
-        }
-        val root = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            val p = m(16, dp)
-            setPadding(p, p, p, p)
-        }
-        scroll.addView(root)
+        val scroll = inflater.inflate(R.layout.fragment_report, container, false)
+        val root = scroll.findViewById<LinearLayout>(R.id.reportContent)
         rootLayout = root
         buildReport(ctx, dp, root)
         return scroll
@@ -136,10 +129,10 @@ class ReportFragment : Fragment() {
         val overall = (pwScore * 0.40 + lessonScore * 0.35 + threatScore * 0.25).toInt()
 
         val (label, color) = when {
-            overall >= 85 -> "EXCELLENT! Keep it up."  to Color.parseColor("#2E7D32")
-            overall >= 70 -> "GOOD! Keep it up."       to Color.parseColor("#4CAF50")
-            overall >= 50 -> "FAIR. Room to improve."  to Color.parseColor("#FF9800")
-            else          -> "NEEDS ATTENTION."        to Color.parseColor("#F44336")
+            overall >= 85 -> "EXCELLENT! Keep it up."  to CipherPalette.success
+            overall >= 70 -> "GOOD! Keep it up."       to CipherPalette.success
+            overall >= 50 -> "FAIR. Room to improve."  to CipherPalette.warning
+            else          -> "NEEDS ATTENTION."        to CipherPalette.danger
         }
 
         return ReportData(
@@ -222,7 +215,7 @@ class ReportFragment : Fragment() {
                 text     = "CipherLock Security Report"
                 textSize = 20f
                 typeface = Typeface.DEFAULT_BOLD
-                setTextColor(Color.parseColor("#1A237E"))
+                setTextColor(CipherPalette.primary)
             })
             addView(TextView(ctx).apply {
                 text     = "Confidential  |  ${sdf.format(Date())}  |  Personal use only"
@@ -286,13 +279,13 @@ class ReportFragment : Fragment() {
             val pwSub   = if (data.totalPasswords == 0) "none saved" else "strong"
             val (pwBg, pwFg) = when {
                 data.totalPasswords == 0                        ->
-                    Color.parseColor("#FFEBEE") to Color.parseColor("#C62828") // red — warning
+                    CipherPalette.dangerContainer to CipherPalette.danger // red — warning
                 data.passwordStrengthPct >= 80                  ->
-                    Color.parseColor("#E8F5E9") to Color.parseColor("#2E7D32") // green — good
+                    CipherPalette.successContainer to CipherPalette.success // green — good
                 data.passwordStrengthPct >= 50                  ->
-                    Color.parseColor("#FFF8E1") to Color.parseColor("#F57F17") // amber — fair
+                    CipherPalette.warningContainer to CipherPalette.warning // amber — fair
                 else                                            ->
-                    Color.parseColor("#FFEBEE") to Color.parseColor("#C62828") // red — weak
+                    CipherPalette.dangerContainer to CipherPalette.danger // red — weak
             }
             addView(statBox(ctx, dp, "Passwords", pwValue, pwSub, pwBg, pwFg))
             addView(gapH(ctx, m(8, dp)))
@@ -300,11 +293,11 @@ class ReportFragment : Fragment() {
             // Threats box: green when 0 (safe), orange/red when threats exist
             val (thrBg, thrFg) = when {
                 data.threatsThisWeek == 0  ->
-                    Color.parseColor("#E8F5E9") to Color.parseColor("#2E7D32") // green — safe
+                    CipherPalette.successContainer to CipherPalette.success // green — safe
                 data.threatsThisWeek <= 2  ->
-                    Color.parseColor("#FFF3E0") to Color.parseColor("#E65100") // orange — caution
+                    CipherPalette.warningContainer to CipherPalette.warning // orange — caution
                 else                       ->
-                    Color.parseColor("#FFEBEE") to Color.parseColor("#C62828") // red — danger
+                    CipherPalette.dangerContainer to CipherPalette.danger // red — danger
             }
             addView(statBox(ctx, dp, "Threats",
                 "${data.threatsThisWeek}", "this week", thrBg, thrFg))
@@ -313,13 +306,13 @@ class ReportFragment : Fragment() {
             // Lessons box: blue when complete, orange when partial, red when none started
             val (lsnBg, lsnFg) = when {
                 data.lessonsCompleted >= data.totalLessons      ->
-                    Color.parseColor("#E3F2FD") to Color.parseColor("#1565C0") // blue — complete
+                    CipherPalette.infoContainer to CipherPalette.primary // blue — complete
                 data.lessonsCompleted >= data.totalLessons / 2  ->
-                    Color.parseColor("#FFF8E1") to Color.parseColor("#F57F17") // amber — halfway
+                    CipherPalette.warningContainer to CipherPalette.warning // amber — halfway
                 data.lessonsCompleted > 0                       ->
-                    Color.parseColor("#FFF3E0") to Color.parseColor("#E65100") // orange — started
+                    CipherPalette.warningContainer to CipherPalette.warning // orange — started
                 else                                            ->
-                    Color.parseColor("#FFEBEE") to Color.parseColor("#C62828") // red — none
+                    CipherPalette.dangerContainer to CipherPalette.danger // red — none
             }
             addView(statBox(ctx, dp, "Lessons",
                 "${data.lessonsCompleted}/${data.totalLessons}", "completed", lsnBg, lsnFg))
@@ -381,7 +374,7 @@ class ReportFragment : Fragment() {
         section.addView(TextView(ctx).apply {
             text     = "Detailed Recommendations"
             textSize = 16f; typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#1A237E"))
+            setTextColor(CipherPalette.primary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -396,9 +389,9 @@ class ReportFragment : Fragment() {
         if (data.reusedPairs.isNotEmpty()) {
             val (a, b) = data.reusedPairs[0]
             recs += Rec(
-                "⚠️  Password Reuse Detected",
+                "Password Reuse Detected",
                 "$a and $b share the same password. Use unique passwords for each service.",
-                Color.parseColor("#FFF8E1")
+                CipherPalette.warningContainer
             )
         }
 
@@ -407,9 +400,9 @@ class ReportFragment : Fragment() {
             val names = data.weakServices.take(2).joinToString(", ")
             val plural = if (data.weakServices.size > 1) "s are" else " is"
             recs += Rec(
-                "🔑  Weak Password${if (data.weakServices.size > 1) "s" else ""}",
+                "Weak Password${if (data.weakServices.size > 1) "s" else ""}",
                 "$names password$plural weak. Use 12+ chars with uppercase, numbers & symbols.",
-                Color.parseColor("#FCE4EC")
+                CipherPalette.dangerContainer
             )
         }
 
@@ -417,18 +410,18 @@ class ReportFragment : Fragment() {
         if (data.totalPasswords > 0 && data.weakServices.isEmpty() && data.reusedPairs.isEmpty()) {
             val s = if (data.totalPasswords > 1) "s are" else " is"
             recs += Rec(
-                "✅  Passwords Look Good",
+                "Passwords Look Good",
                 "All ${data.totalPasswords} saved password$s strong and unique. Great job!",
-                Color.parseColor("#E8F5E9")
+                CipherPalette.successContainer
             )
         }
 
         // ── Vault is empty ──
         if (data.totalPasswords == 0) {
             recs += Rec(
-                "🔐  Vault is Empty",
+                "Vault is Empty",
                 "Save passwords in the Vault tab to get strength analysis here.",
-                Color.parseColor("#E3F2FD")
+                CipherPalette.infoContainer
             )
         }
 
@@ -436,15 +429,15 @@ class ReportFragment : Fragment() {
         if (data.threatsThisWeek > 0) {
             val s = if (data.threatsThisWeek > 1) "s" else ""
             recs += Rec(
-                "🛡️  ${data.threatsThisWeek} Threat$s This Week",
+                "${data.threatsThisWeek} Threat$s This Week",
                 "CHIPHERLOCK blocked suspicious SMS. Never tap links from unknown senders.",
-                Color.parseColor("#FFF3E0")
+                CipherPalette.warningContainer
             )
         } else {
             recs += Rec(
-                "✅  No Threats This Week",
+                "No Threats This Week",
                 "No suspicious messages in the past 7 days. Stay vigilant!",
-                Color.parseColor("#E8F5E9")
+                CipherPalette.successContainer
             )
         }
 
@@ -452,15 +445,15 @@ class ReportFragment : Fragment() {
         val remaining = data.totalLessons - data.lessonsCompleted
         recs += if (remaining > 0)
             Rec(
-                "📚  $remaining Lesson${if (remaining > 1) "s" else ""} Remaining",
+                "$remaining Lesson${if (remaining > 1) "s" else ""} Remaining",
                 "Read all ${data.totalLessons} Help Desk articles to earn your Cyber Defender badge.",
-                Color.parseColor("#EDE7F6")
+                CipherPalette.surfaceHigh
             )
         else
             Rec(
-                "🏆  Cyber Defender Badge!",
+                "Cyber Defender Badge!",
                 "You've read all ${data.totalLessons} Help Desk articles. Outstanding!",
-                Color.parseColor("#E8F5E9")
+                CipherPalette.successContainer
             )
 
         // ── Pyramid layout: first card full-width, rest in 2-column pairs ──
@@ -515,14 +508,14 @@ class ReportFragment : Fragment() {
 
             addView(TextView(ctx).apply {
                 text     = title; textSize = 11f; typeface = Typeface.DEFAULT_BOLD
-                setTextColor(Color.parseColor("#212121"))
+                setTextColor(CipherPalette.textPrimary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.bottomMargin = m(4, dp) }
             })
             addView(TextView(ctx).apply {
-                text = body; textSize = 11f; setTextColor(Color.parseColor("#424242"))
+                text = body; textSize = 11f; setTextColor(CipherPalette.textSecondary)
                 setLineSpacing(0f, 1.25f)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -545,8 +538,8 @@ class ReportFragment : Fragment() {
         // Export PDF button
         container.addView(Button(ctx).apply {
             text     = "Export Full Report (PDF)"
-            textSize = 13f; setTextColor(Color.WHITE)
-            backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1A237E"))
+            textSize = 13f; setTextColor(CipherPalette.onPrimary)
+            backgroundTintList = ColorStateList.valueOf(CipherPalette.primary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, m(50, dp)
             ).also { it.bottomMargin = m(8, dp) }
@@ -556,10 +549,10 @@ class ReportFragment : Fragment() {
         // Remote Kill Switch card
         container.addView(LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#FFF3F3"))
+            setBackgroundColor(CipherPalette.dangerContainer)
             val border = android.graphics.drawable.GradientDrawable().apply {
-                setColor(Color.parseColor("#FFF3F3"))
-                setStroke(m(1, dp), Color.parseColor("#B71C1C"))
+                setColor(CipherPalette.dangerContainer)
+                setStroke(m(1, dp), CipherPalette.danger)
                 cornerRadius = m(8, dp).toFloat()
             }
             background = border
@@ -570,9 +563,9 @@ class ReportFragment : Fragment() {
             ).also { it.bottomMargin = m(12, dp) }
 
             addView(TextView(ctx).apply {
-                text = "🚨 Lost or Stolen Device?"
+                text = "Lost or Stolen Device?"
                 textSize = 14f; setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(Color.parseColor("#B71C1C"))
+                setTextColor(CipherPalette.danger)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -584,7 +577,7 @@ class ReportFragment : Fragment() {
                         "If your phone is stolen, lock your vault remotely from " +
                         "any browser — no app needed."
                 textSize = 12f
-                setTextColor(Color.parseColor("#5D0000"))
+                setTextColor(CipherPalette.danger)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -594,7 +587,7 @@ class ReportFragment : Fragment() {
             addView(TextView(ctx).apply {
                 text = "How to lock remotely:"
                 textSize = 12f; setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(Color.parseColor("#B71C1C"))
+                setTextColor(CipherPalette.danger)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -606,7 +599,7 @@ class ReportFragment : Fragment() {
                         "2. Change  \"status\": \"ok\"  →  \"status\": \"revoked\"\n" +
                         "3. Save — vault locks within 24 hours"
                 textSize = 12f
-                setTextColor(Color.parseColor("#5D0000"))
+                setTextColor(CipherPalette.danger)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -617,7 +610,7 @@ class ReportFragment : Fragment() {
             addView(TextView(ctx).apply {
                 text = revUrl
                 textSize = 10f
-                setTextColor(Color.parseColor("#1565C0"))
+                setTextColor(CipherPalette.primary)
                 typeface = android.graphics.Typeface.MONOSPACE
                 setTextIsSelectable(true)
                 layoutParams = LinearLayout.LayoutParams(
@@ -628,8 +621,8 @@ class ReportFragment : Fragment() {
 
             addView(Button(ctx).apply {
                 text = "Copy Kill Switch URL"
-                textSize = 12f; setTextColor(Color.WHITE)
-                backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B71C1C"))
+                textSize = 12f; setTextColor(CipherPalette.textPrimary)
+                backgroundTintList = ColorStateList.valueOf(CipherPalette.danger)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, m(42, dp)
                 )
@@ -686,7 +679,7 @@ class ReportFragment : Fragment() {
             canvas.drawArc(oval, -90f, 360f, false,
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
                     style = Paint.Style.STROKE; strokeWidth = strokeW
-                    color = Color.parseColor("#E0E0E0")
+                    color = CipherPalette.outlineSoft
                 })
 
             // Score arc (clockwise from 12 o'clock)
@@ -707,7 +700,7 @@ class ReportFragment : Fragment() {
             canvas.drawText("$score", cx, blockTop + numSize,
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
                     textAlign = Paint.Align.CENTER; textSize = numSize
-                    color = Color.parseColor("#1A237E"); isFakeBoldText = true
+                    color = CipherPalette.primary; isFakeBoldText = true
                 })
             canvas.drawText("/ 100", cx, blockTop + numSize + subSize * 1.5f,
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -748,30 +741,30 @@ class ReportFragment : Fragment() {
                     values.clear()
                     values.put(MediaStore.Downloads.IS_PENDING, 0)
                     ctx.contentResolver.update(uri, values, null, null)
-                    Toast.makeText(ctx, "✅ Saved to Downloads: $fileName", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "Saved to Downloads: $fileName", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(ctx, "❌ Could not create file", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "Could not create file", Toast.LENGTH_LONG).show()
                 }
             } else {
                 @Suppress("DEPRECATION")
                 val dir  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val file = java.io.File(dir, fileName)
                 FileOutputStream(file).use { doc.writeTo(it) }
-                Toast.makeText(ctx, "✅ Saved to Downloads: $fileName", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, "Saved to Downloads: $fileName", Toast.LENGTH_LONG).show()
             }
             doc.close()
 
         } catch (e: Exception) {
-            Toast.makeText(ctx, "❌ Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun drawPdfPage(canvas: Canvas, data: ReportData) {
-        val navy   = Color.parseColor("#1A237E")
+        val navy   = CipherPalette.primary
         val black  = Color.BLACK
-        val gray   = Color.parseColor("#757575")
-        val green  = Color.parseColor("#2E7D32")
-        val orange = Color.parseColor("#E65100")
+        val gray   = CipherPalette.textSecondary
+        val green  = CipherPalette.success
+        val orange = CipherPalette.warning
         val sdf    = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
 
         fun p(c: Int, sz: Float, bold: Boolean = false) =
@@ -810,10 +803,10 @@ class ReportFragment : Fragment() {
 
         if (data.reusedPairs.isNotEmpty()) {
             val (a, b) = data.reusedPairs[0]
-            canvas.drawText("⚠  Password Reuse: \"$a\" and \"$b\" share the same password.", 40f, y, p(orange, 12f)); y += 18f
+            canvas.drawText("Password Reuse: \"$a\" and \"$b\" share the same password.", 40f, y, p(orange, 12f)); y += 18f
         }
         if (data.weakServices.isNotEmpty()) {
-            canvas.drawText("⚠  Weak Passwords: ${data.weakServices.take(3).joinToString(", ")}", 40f, y, p(orange, 12f)); y += 18f
+            canvas.drawText("Weak Passwords: ${data.weakServices.take(3).joinToString(", ")}", 40f, y, p(orange, 12f)); y += 18f
         }
         if (data.totalPasswords > 0 && data.weakServices.isEmpty() && data.reusedPairs.isEmpty()) {
             canvas.drawText("✓  All ${data.totalPasswords} vault passwords are strong and unique.", 40f, y, p(green, 12f)); y += 18f
@@ -843,7 +836,7 @@ class ReportFragment : Fragment() {
     private fun cardBg(dp: Float) = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = m(12, dp).toFloat()
-        setColor(Color.WHITE)
+        setColor(CipherPalette.surface)
     }
 
     private fun cardLp(dp: Float) = LinearLayout.LayoutParams(

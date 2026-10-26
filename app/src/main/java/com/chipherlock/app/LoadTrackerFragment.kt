@@ -106,7 +106,11 @@ class LoadTrackerFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View = buildUI(requireContext())
+    ): View {
+        val view = inflater.inflate(R.layout.fragment_load_tracker, container, false)
+        buildUI(requireContext(), view.findViewById(R.id.loadTrackerContent))
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -120,23 +124,12 @@ class LoadTrackerFragment : Fragment() {
 
     // ── UI construction ──────────────────────────────────────────────────────
 
-    private fun buildUI(ctx: Context): ScrollView {
-        val scroll = ScrollView(ctx)
-        val root   = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-        scroll.addView(root)
-
+    private fun buildUI(ctx: Context, root: LinearLayout) {
         // ── Header ──────────────────────────────────────────────────────
         root.addView(LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity     = Gravity.CENTER_VERTICAL
-            setBackgroundColor(Color.parseColor("#1976D2"))
+            setBackgroundColor(CipherPalette.surfaceHigh)
             setPadding(dp(ctx, 8), dp(ctx, 8), dp(ctx, 8), dp(ctx, 8))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -145,7 +138,7 @@ class LoadTrackerFragment : Fragment() {
             addView(Button(ctx).apply {
                 text      = "← BACK"
                 textSize  = 11f
-                setTextColor(Color.WHITE)
+                setTextColor(CipherPalette.textPrimary)
                 backgroundTintList = android.content.res.ColorStateList
                     .valueOf(Color.TRANSPARENT)
                 layoutParams = LinearLayout.LayoutParams(
@@ -155,10 +148,10 @@ class LoadTrackerFragment : Fragment() {
                 setOnClickListener { parentFragmentManager.popBackStack() }
             })
             addView(TextView(ctx).apply {
-                text     = "📶  Load Balance"
+                text     = "Load Balance"
                 textSize = 18f
                 typeface = Typeface.DEFAULT_BOLD
-                setTextColor(Color.WHITE)
+                setTextColor(CipherPalette.textPrimary)
             })
         })
 
@@ -187,7 +180,7 @@ class LoadTrackerFragment : Fragment() {
         // ── Result card ──────────────────────────────────────────────────
         cardResult = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            background  = roundedBg(ctx, Color.WHITE)
+            background  = roundedBg(ctx, CipherPalette.surface)
             setPadding(dp(ctx, 16), dp(ctx, 16), dp(ctx, 16), dp(ctx, 16))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -241,7 +234,7 @@ class LoadTrackerFragment : Fragment() {
                 text      = "SMS Spend History"
                 textSize  = 15f
                 typeface  = Typeface.DEFAULT_BOLD
-                setTextColor(Color.parseColor("#1A1A1A"))
+                setTextColor(CipherPalette.textPrimary)
                 layoutParams = LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
                 )
@@ -249,7 +242,7 @@ class LoadTrackerFragment : Fragment() {
             btnClearHist = Button(ctx).apply {
                 text      = "Clear"
                 textSize  = 11f
-                setTextColor(Color.parseColor("#CC0000"))
+                setTextColor(CipherPalette.danger)
                 backgroundTintList = android.content.res.ColorStateList
                     .valueOf(Color.TRANSPARENT)
                 setOnClickListener { confirmClearHistory(ctx) }
@@ -261,7 +254,7 @@ class LoadTrackerFragment : Fragment() {
             if (VaultKeyManager.isUnlocked())
                 "No SMS sent through CHIPHERLOCK yet."
             else
-                "🔒 Unlock the vault to view SMS history.",
+                "Unlock the vault to view SMS history.",
             12f, "#888888")
         content.addView(tvHistoryEmpty)
 
@@ -272,13 +265,12 @@ class LoadTrackerFragment : Fragment() {
 
         // ── Disclaimer ──────────────────────────────────────────────────
         content.addView(label(ctx,
-            "⚠️ Balance is fetched live from your telco via USSD. " +
+            "Balance is fetched live from your telco via USSD. " +
                     "SMS history shows only messages sent through CHIPHERLOCK. " +
                     "Recipient identities are hashed — CHIPHERLOCK cannot recover them. " +
                     "History is automatically deleted after 30 days.",
             11f, "#999999").also { it.setPadding(0, dp(ctx, 16), 0, 0) })
 
-        return scroll
     }
 
     private fun buildSimCard(ctx: Context, slot: Int): LinearLayout {
@@ -286,20 +278,20 @@ class LoadTrackerFragment : Fragment() {
             text     = "Detecting SIM $slot…"
             textSize = 16f
             typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#1A1A1A"))
+            setTextColor(CipherPalette.textPrimary)
         }
         val statusTv = TextView(ctx).apply {
             text     = "—"
             textSize = 12f
-            setTextColor(Color.parseColor("#666666"))
+            setTextColor(CipherPalette.textSecondary)
             setPadding(0, dp(ctx, 4), 0, dp(ctx, 12))
         }
         val checkBtn = Button(ctx).apply {
             text = "Check Balance"
             textSize = 13f
-            setTextColor(Color.WHITE)
+            setTextColor(CipherPalette.onPrimary)
             backgroundTintList = android.content.res.ColorStateList
-                .valueOf(Color.parseColor("#1976D2"))
+                .valueOf(CipherPalette.primary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -307,7 +299,7 @@ class LoadTrackerFragment : Fragment() {
         }
         return LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            background  = roundedBg(ctx, Color.WHITE)
+            background  = roundedBg(ctx, CipherPalette.surface)
             setPadding(dp(ctx, 16), dp(ctx, 16), dp(ctx, 16), dp(ctx, 16))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -340,7 +332,7 @@ class LoadTrackerFragment : Fragment() {
 
     private fun showPermissionExplanation() {
         android.app.AlertDialog.Builder(requireContext())
-            .setTitle("📞 Phone Permission Needed")
+            .setTitle("Phone Permission Needed")
             .setMessage(
                 "CHIPHERLOCK needs Phone access to check your load balance " +
                         "directly from your telco via USSD (*143#, *123#).\n\n" +
@@ -421,10 +413,10 @@ class LoadTrackerFragment : Fragment() {
     private fun carrierLabel(carrier: String): String {
         val c = carrier.lowercase()
         return when {
-            c.contains("globe") || c.contains("tm")                        -> "🔵 Globe / TM"
-            c.contains("smart") || c.contains("tnt") || c.contains("sun") -> "🔴 Smart / TNT / Sun"
-            c.contains("dito")                                             -> "🟣 DITO Telecommunity"
-            else                                                           -> "📡 $carrier"
+            c.contains("globe") || c.contains("tm")                        -> "Globe / TM"
+            c.contains("smart") || c.contains("tnt") || c.contains("sun") -> "Smart / TNT / Sun"
+            c.contains("dito")                                             -> "DITO Telecommunity"
+            else                                                           -> "$carrier"
         }
     }
 
@@ -442,7 +434,7 @@ class LoadTrackerFragment : Fragment() {
         val code = ussdCode(carrier)
 
         progressBar.visibility   = View.VISIBLE
-        tvResultLabel.text       = "⏳ Querying $carrier via $code…"
+        tvResultLabel.text       = "Querying $carrier via $code…"
         tvResultLabel.visibility = View.VISIBLE
         hideStructuredResult()
 
@@ -487,12 +479,12 @@ class LoadTrackerFragment : Fragment() {
                         Handler(Looper.getMainLooper()).post {
                             progressBar.visibility = View.GONE
                             tvResultLabel.text =
-                                "❌ USSD request failed (code $failureCode).\n\n" +
+                                "USSD request failed (code $failureCode).\n\n" +
                                         "This can happen if:\n" +
                                         "• You're not the default SMS app\n" +
                                         "• The network is temporarily unavailable\n\n" +
                                         "Try dialling $code manually."
-                            tvResultLabel.setTextColor(Color.parseColor("#CC0000"))
+                            tvResultLabel.setTextColor(CipherPalette.danger)
                         }
                     }
                 },
@@ -502,8 +494,8 @@ class LoadTrackerFragment : Fragment() {
         } else {
             progressBar.visibility = View.GONE
             tvResultLabel.text =
-                "⚠️ Phone permission not granted. Tap Check Balance to request it."
-            tvResultLabel.setTextColor(Color.parseColor("#E65100"))
+                "Phone permission not granted. Tap Check Balance to request it."
+            tvResultLabel.setTextColor(CipherPalette.warning)
         }
     }
 
@@ -543,7 +535,7 @@ class LoadTrackerFragment : Fragment() {
         llHistory.removeAllViews()
 
         if (!VaultKeyManager.isUnlocked()) {
-            tvHistoryEmpty.text       = "🔒 Unlock the vault to view SMS history."
+            tvHistoryEmpty.text       = "Unlock the vault to view SMS history."
             tvHistoryEmpty.visibility = View.VISIBLE
             btnClearHist.visibility   = View.GONE
             return
@@ -588,7 +580,7 @@ class LoadTrackerFragment : Fragment() {
 
             val card = LinearLayout(ctx).apply {
                 orientation = LinearLayout.VERTICAL
-                background  = roundedBg(ctx, Color.WHITE)
+                background  = roundedBg(ctx, CipherPalette.surface)
                 setPadding(dp(ctx, 12), dp(ctx, 8), dp(ctx, 12), dp(ctx, 8))
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -657,7 +649,14 @@ class LoadTrackerFragment : Fragment() {
         TextView(ctx).apply {
             this.text = text
             textSize  = size
-            setTextColor(Color.parseColor(colorHex))
+            setTextColor(when (colorHex.uppercase()) {
+                "#1976D2" -> CipherPalette.primary
+                "#CC0000" -> CipherPalette.danger
+                "#00AA44" -> CipherPalette.success
+                "#1A1A1A", "#333333" -> CipherPalette.textPrimary
+                "#444444", "#555555", "#666666" -> CipherPalette.textSecondary
+                else -> CipherPalette.textMuted
+            })
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT

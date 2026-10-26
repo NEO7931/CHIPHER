@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/touch_target"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingTop="10dp"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/ivAppIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_icon_clip"
+        android:clipToOutline="true"
+        android:contentDescription="@null"
+        android:outlineProvider="background"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_vault" />
+
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Body"
+        android:textColor="@color/cipher_text_primary"
+        android:textSize="15sp"
+        tools:text="Gmail" />
+</LinearLayout>

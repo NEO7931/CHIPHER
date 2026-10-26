@@ -25,7 +25,7 @@ object RuleEngine {
                 val id      = obj.optString("id",          "")
                 val pattern = obj.optString("pattern",     "").takeIf { it.isNotEmpty() } ?: continue
                 val weight  = obj.optInt   ("weight",      10)
-                val cat     = obj.optString("category",    "⚠️ Suspicious")
+                val cat     = obj.optString("category",    "Suspicious")
                 val desc    = obj.optString("description", pattern)
                 try {
                     val regex = Regex(pattern, RegexOption.IGNORE_CASE)

@@ -108,68 +108,11 @@ class HelpDeskFragment : Fragment() {
         val density = ctx.resources.displayMetrics.density
         dp = { v -> (v * density).toInt() }
 
-        // ── Outer shell: header + tabs + content ──────────────────────────────
-        val shell = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-
-        // Header
-        shell.addView(LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity     = Gravity.CENTER_VERTICAL
-            setBackgroundColor(0xFF0D47A1.toInt())
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-
-            addView(TextView(ctx).apply {
-                text     = "🛡️"
-                textSize = 20f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { marginEnd = dp(8) }
-            })
-            addView(LinearLayout(ctx).apply {
-                orientation = LinearLayout.VERTICAL
-                addView(TextView(ctx).apply {
-                    text     = "Help Desk"
-                    textSize = 18f
-                    typeface = android.graphics.Typeface.DEFAULT_BOLD
-                    setTextColor(0xFFFFFFFF.toInt())
-                })
-                addView(TextView(ctx).apply {
-                    text     = "CHIPHERLOCK Security Assistant"
-                    textSize = 11f
-                    setTextColor(0xFFB3E5FC.toInt())
-                })
-            })
-        })
-
-        // TabLayout
-        val tabLayout = TabLayout(ctx).apply {
-            setBackgroundColor(0xFF1565C0.toInt())
-            setTabTextColors(0xFFB3E5FC.toInt(), 0xFFFFFFFF.toInt())
-            setSelectedTabIndicatorColor(0xFFFFFFFF.toInt())
-            tabMode = TabLayout.MODE_FIXED
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
-        tabLayout.addTab(tabLayout.newTab().setText("🏠  Home"))
-        tabLayout.addTab(tabLayout.newTab().setText("💬  Chat"))
-        shell.addView(tabLayout)
-
-        // Content switcher
-        tabContent = FrameLayout(ctx).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
-            )
-        }
-        shell.addView(tabContent)
+        val shell = inflater.inflate(R.layout.fragment_help_desk, container, false)
+        val tabLayout = shell.findViewById<TabLayout>(R.id.helpTabLayout)
+        tabContent = shell.findViewById(R.id.helpTabContent)
+        tabLayout.addTab(tabLayout.newTab().setText("Home"))
+        tabLayout.addTab(tabLayout.newTab().setText("Assistant"))
 
         // Tab listener only — initial load happens in onViewCreated
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -241,7 +184,7 @@ class HelpDeskFragment : Fragment() {
         rvChat = RecyclerView(ctx).apply {
             this.layoutManager = this@HelpDeskFragment.layoutManager
             this.adapter       = this@HelpDeskFragment.adapter
-            setBackgroundColor(0xFFF5F5F5.toInt())
+            setBackgroundColor(CipherPalette.background)
             setPadding(0, dp(8), 0, dp(8))
             clipToPadding = false
             layoutParams = LinearLayout.LayoutParams(
@@ -264,15 +207,15 @@ class HelpDeskFragment : Fragment() {
         val bar = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity     = Gravity.CENTER_VERTICAL
-            setBackgroundColor(0xFFE8EAF6.toInt())
+            setBackgroundColor(CipherPalette.surfaceHigh)
             setPadding(dp(12), dp(6), dp(12), dp(6))
         }
 
         val labelView = TextView(ctx).apply {
-            text     = if (isOnlineMode) "Mode: 🤖 AI Assistant" else "Mode: 📖 Offline FAQ"
+            text     = if (isOnlineMode) "Mode: AI Assistant" else "Mode: Offline FAQ"
             textSize = 12f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(0xFF1A237E.toInt())
+            setTextColor(CipherPalette.primary)
             layoutParams = LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
@@ -281,8 +224,8 @@ class HelpDeskFragment : Fragment() {
         btnModeToggle = TextView(ctx).apply {
             text     = if (isOnlineMode) "Switch to FAQ" else "Switch to AI"
             textSize = 12f
-            setTextColor(0xFFFFFFFF.toInt())
-            setBackgroundColor(0xFF3949AB.toInt())
+            setTextColor(CipherPalette.onPrimary)
+            setBackgroundColor(CipherPalette.primary)
             setPadding(dp(12), dp(6), dp(12), dp(6))
             setOnClickListener {
                 if (!isOnlineMode && !groqAvailable) {
@@ -293,7 +236,7 @@ class HelpDeskFragment : Fragment() {
                 groqHistory.clear()
                 messages.clear()
                 adapter.notifyDataSetChanged()
-                labelView.text = if (isOnlineMode) "Mode: 🤖 AI Assistant" else "Mode: 📖 Offline FAQ"
+                labelView.text = if (isOnlineMode) "Mode: AI Assistant" else "Mode: Offline FAQ"
                 text           = if (isOnlineMode) "Switch to FAQ" else "Switch to AI"
                 postWelcome()
             }
@@ -308,7 +251,7 @@ class HelpDeskFragment : Fragment() {
         val bar = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity     = Gravity.BOTTOM    // aligns send button to bottom when text grows
-            setBackgroundColor(0xFFFFFFFF.toInt())
+            setBackgroundColor(CipherPalette.surface)
             setPadding(dp(10), dp(8), dp(10), dp(8))
             elevation = dp(4).toFloat()
         }
@@ -321,8 +264,8 @@ class HelpDeskFragment : Fragment() {
             isSingleLine = false
             imeOptions  = EditorInfo.IME_FLAG_NO_ENTER_ACTION
             setPadding(dp(12), dp(10), dp(12), dp(10))
-            setBackgroundColor(0xFFF0F0F0.toInt())
-            background  = buildRoundedBackground(ctx, 0xFFF0F0F0.toInt(), dp(20))
+            setBackgroundColor(CipherPalette.surfaceHigh)
+            background  = buildRoundedBackground(ctx, CipherPalette.surfaceHigh, dp(20))
             layoutParams = LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
             ).apply { marginEnd = dp(8) }
@@ -331,9 +274,9 @@ class HelpDeskFragment : Fragment() {
 
         btnSend = ImageButton(ctx).apply {
             setImageResource(android.R.drawable.ic_menu_send)
-            setBackgroundColor(0xFF1565C0.toInt())
-            background = buildRoundedBackground(ctx, 0xFF1565C0.toInt(), dp(22))
-            imageTintList = android.content.res.ColorStateList.valueOf(0xFFFFFFFF.toInt())
+            setBackgroundColor(CipherPalette.primary)
+            background = buildRoundedBackground(ctx, CipherPalette.primary, dp(22))
+            imageTintList = android.content.res.ColorStateList.valueOf(CipherPalette.onPrimary)
             val size = dp(44)
             layoutParams = LinearLayout.LayoutParams(size, size)
             setOnClickListener { onSendTapped(ctx) }
@@ -358,13 +301,13 @@ class HelpDeskFragment : Fragment() {
 
     private fun postWelcome() {
         val welcome = if (isOnlineMode)
-            "👋 Hi! I'm your CHIPHERLOCK AI assistant.\n\n" +
+            "Hi! I'm your CHIPHERLOCK AI assistant.\n\n" +
                     "Ask me anything about the app or about scam protection in the Philippines. " +
                     "I'll answer in whatever language you use Filipino, Bisaya, Ilocano, Taglish, English, anything."
         else
-            "👋 Hi! I'm your offline Help Desk.\n\n" +
+            "Hi! I'm your offline Help Desk.\n\n" +
                     "Type a question and I'll search our knowledge base, or tap a topic below to browse articles.\n\n" +
-                    "📚 Topics: SMS Shield · Vault · Network · Report · Security Tips · App Help"
+                    "Topics: SMS Shield · Vault · Network · Report · Security Tips · App Help"
 
         addMessage(ChatMessage(TYPE_ASSISTANT, welcome, isOffline = true))
     }
@@ -389,11 +332,11 @@ class HelpDeskFragment : Fragment() {
         val match = HelpDeskKnowledgeBase.search(question)
         if (match != null) {
             addMessage(ChatMessage(TYPE_ASSISTANT,
-                "📖  ${match.title}\n\n${match.body}", isOffline = true))
+                "${match.title}\n\n${match.body}", isOffline = true))
             markArticleRead(ctx, match.id)
         } else {
             addMessage(ChatMessage(TYPE_ASSISTANT,
-                "❓  I couldn't find an article that matches your question.\n\n" +
+                "I couldn't find an article that matches your question.\n\n" +
                         "Try rephrasing, or switch to AI mode for a freeform answer.", isOffline = true))
         }
     }
@@ -429,9 +372,9 @@ class HelpDeskFragment : Fragment() {
                         // Fall back to offline
                         val match = HelpDeskKnowledgeBase.search(question)
                         val fallbackText = if (match != null)
-                            "⚠️  AI unavailable  here's what I found offline:\n\n📖  ${match.title}\n\n${match.body}"
+                            "AI unavailable  here's what I found offline:\n\n${match.title}\n\n${match.body}"
                         else
-                            "⚠️  AI unavailable and no offline match found.\n\nTry rephrasing, or switch to FAQ mode."
+                            "AI unavailable and no offline match found.\n\nTry rephrasing, or switch to FAQ mode."
                         messages[typingIndex] = ChatMessage(TYPE_ASSISTANT, fallbackText, isOffline = true)
                         if (match != null) markArticleRead(ctx, match.id)
                     }
@@ -478,7 +421,7 @@ class HelpDeskFragment : Fragment() {
                 is AssistantVH -> {
                     holder.tv.text = msg.text
                     holder.card.setBackgroundColor(
-                        if (msg.isOffline) 0xFFE8F5E9.toInt() else 0xFFFFFFFF.toInt()
+                        if (msg.isOffline) CipherPalette.successContainer else CipherPalette.surface
                     )
                 }
                 is TypingVH    -> { /* static animation dots */ }
@@ -516,8 +459,8 @@ class HelpDeskFragment : Fragment() {
             val bubble = TextView(ctx).apply {
                 tag      = "bubble_text"
                 textSize = 15f
-                setTextColor(0xFFFFFFFF.toInt())
-                background = buildRoundedBackground(ctx, 0xFF1565C0.toInt(), dp(18))
+                setTextColor(CipherPalette.onPrimary)
+                background = buildRoundedBackground(ctx, CipherPalette.primary, dp(18))
                 setPadding(dp(14), dp(10), dp(14), dp(10))
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -541,22 +484,12 @@ class HelpDeskFragment : Fragment() {
             }
 
             // Avatar dot
-            row.addView(TextView(ctx).apply {
-                text     = "🛡"
-                textSize = 18f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginEnd = dp(8)
-                    topMargin = dp(4)
-                }
-            })
+            row.addView(buildAssistantAvatar())
 
             val card = LinearLayout(ctx).apply {
                 tag         = "bubble_card"
                 orientation = LinearLayout.VERTICAL
-                background  = buildRoundedBackground(ctx, 0xFFFFFFFF.toInt(), dp(18))
+                background  = buildRoundedBackground(ctx, CipherPalette.surface, dp(18))
                 setPadding(dp(14), dp(10), dp(14), dp(10))
                 elevation   = dp(1).toFloat()
                 layoutParams = LinearLayout.LayoutParams(
@@ -568,13 +501,24 @@ class HelpDeskFragment : Fragment() {
             val tv = TextView(ctx).apply {
                 tag      = "bubble_text"
                 textSize = 15f
-                setTextColor(0xFF212121.toInt())
+                setTextColor(CipherPalette.textPrimary)
                 setTextIsSelectable(true)
             }
             card.addView(tv)
             row.addView(card)
             return row
         }
+
+        private fun buildAssistantAvatar(): View =
+            android.widget.ImageView(ctx).apply {
+                setImageResource(R.drawable.ic_shield)
+                imageTintList = android.content.res.ColorStateList.valueOf(CipherPalette.primary)
+                contentDescription = null
+                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply {
+                    marginEnd = dp(8)
+                    topMargin = dp(6)
+                }
+            }
 
         private fun buildTypingBubble(): View {
             val row = LinearLayout(ctx).apply {
@@ -586,19 +530,12 @@ class HelpDeskFragment : Fragment() {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
             }
-            row.addView(TextView(ctx).apply {
-                text     = "🛡"
-                textSize = 18f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { marginEnd = dp(8); topMargin = dp(4) }
-            })
+            row.addView(buildAssistantAvatar())
             row.addView(TextView(ctx).apply {
                 text       = "  ●  ●  ●  "
                 textSize   = 18f
-                setTextColor(0xFF9E9E9E.toInt())
-                background = buildRoundedBackground(ctx, 0xFFEEEEEE.toInt(), dp(18))
+                setTextColor(CipherPalette.textMuted)
+                background = buildRoundedBackground(ctx, CipherPalette.surfaceHigh, dp(18))
                 setPadding(dp(14), dp(10), dp(14), dp(10))
             })
             return row

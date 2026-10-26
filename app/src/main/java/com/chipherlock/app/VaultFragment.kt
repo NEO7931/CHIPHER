@@ -20,7 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -29,7 +29,7 @@ import java.util.*
 class VaultFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var fabAdd: FloatingActionButton
+    private lateinit var fabAdd: ExtendedFloatingActionButton
     private lateinit var tvEmpty: TextView
     private lateinit var adapter: VaultAdapter
 
@@ -202,12 +202,13 @@ class VaultFragment : Fragment() {
             .sortedBy { it.name.lowercase() }
 
         val result = mutableListOf<AppInfo>()
+        val labels = requireContext()
         if (installed.isNotEmpty()) {
-            result += AppInfo("── Installed Apps ──", "", isInstalled = true)  // header
+            result += AppInfo(labels.getString(R.string.section_installed_apps), "", isInstalled = true)
             result += installed
         }
         if (popularOnly.isNotEmpty()) {
-            result += AppInfo("── Popular Apps ──", "", isInstalled = false)   // header
+            result += AppInfo(labels.getString(R.string.section_popular_apps), "", isInstalled = false)
             result += popularOnly
         }
         return result
@@ -221,93 +222,48 @@ class VaultFragment : Fragment() {
      * [onPicked] is called with (appName, packageName) when user selects one.
      */
     private fun showAppPicker(onPicked: (appName: String, packageName: String) -> Unit) {
-        val ctx  = requireContext()
-        val d    = resources.displayMetrics.density
-        fun dp(v: Int) = (v * d).toInt()
+        val ctx = requireContext()
+        val pm  = ctx.packageManager
+        val content = layoutInflater.inflate(R.layout.dialog_vault_app_picker, null)
+        val etSearch = content.findViewById<EditText>(R.id.etSearchApps)
+        val listView = content.findViewById<ListView>(R.id.listApps)
 
-        val allItems    = buildPickerList()
-        val filtered    = allItems.toMutableList()
-
-        val container = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
-
-        // Search field
-        val etSearch = EditText(ctx).apply {
-            hint      = "🔍  Search apps..."
-            inputType = InputType.TYPE_CLASS_TEXT
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-        }
-        container.addView(etSearch)
-
-        // Divider
-        container.addView(View(ctx).apply {
-            setBackgroundColor(Color.parseColor("#E0E0E0"))
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1))
-        })
-
-        // ListView
-        val listView = ListView(ctx).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(360))
-        }
+        val allItems = buildPickerList()
+        val filtered = allItems.toMutableList()
 
         val listAdapter = object : ArrayAdapter<AppInfo>(ctx, 0, filtered) {
-
             private val TYPE_HEADER = 0
             private val TYPE_ITEM   = 1
 
             override fun getViewTypeCount() = 2
             override fun getItemViewType(pos: Int) = if (filtered[pos].isHeader()) TYPE_HEADER else TYPE_ITEM
-            override fun isEnabled(pos: Int)       = !filtered[pos].isHeader()
+            override fun isEnabled(pos: Int) = !filtered[pos].isHeader()
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val app = filtered[position]
-
                 if (app.isHeader()) {
-                    // Section header row
-                    val tv = (convertView as? TextView) ?: TextView(ctx).apply {
-                        setPadding(dp(16), dp(10), dp(16), dp(6))
-                        textSize = 11f
-                        typeface = android.graphics.Typeface.DEFAULT_BOLD
-                        setTextColor(Color.parseColor("#1976D2"))
-                        setBackgroundColor(Color.parseColor("#F5F5F5"))
-                        isAllCaps = true
-                    }
-                    tv.text = app.name
-                    return tv
-                }
-
-                // Regular app row — reuse simple_list_item_2
-                val v = convertView
-                    ?: android.view.LayoutInflater.from(ctx)
-                        .inflate(android.R.layout.simple_list_item_2, parent, false)
-
-                v.findViewById<TextView>(android.R.id.text1).apply {
-                    text = app.name; textSize = 14f
-                    setTextColor(Color.parseColor("#212121"))
-                }
-                v.findViewById<TextView>(android.R.id.text2).apply {
-                    // Show "📱 Installed" badge for device apps, package name for popular
-                    text = if (app.isInstalled) "📱 Installed · ${app.packageName}"
-                    else app.packageName
-                    textSize = 11f
-                    setTextColor(
-                        if (app.isInstalled) Color.parseColor("#388E3C")
-                        else                 Color.parseColor("#9E9E9E")
+                    val header = convertView ?: layoutInflater.inflate(
+                        R.layout.item_app_picker_header, parent, false
                     )
+                    header.findViewById<TextView>(R.id.tvSectionHeader).text = app.name
+                    return header
                 }
-                return v
+
+                val row = convertView ?: layoutInflater.inflate(R.layout.item_app_picker, parent, false)
+                row.findViewById<TextView>(R.id.tvAppName).text = app.name
+                VaultDialogUi.bindAppIcon(pm, app.packageName, row.findViewById(R.id.ivAppIcon))
+                return row
             }
         }
 
         listView.adapter = listAdapter
-        container.addView(listView)
 
-        val dialog = AlertDialog.Builder(ctx)
-            .setTitle("Select App")
-            .setView(container)
-            .setNegativeButton("Cancel", null)
+        val dialog = VaultDialogUi.builder(ctx)
+            .setTitle(R.string.select_app_title)
+            .setView(content)
+            .setNegativeButton(android.R.string.cancel, null)
             .create()
 
-        // Live search — when searching, flatten headers out so results are clean
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -317,11 +273,10 @@ class VaultFragment : Fragment() {
                 if (query.isEmpty()) {
                     filtered.addAll(allItems)
                 } else {
-                    // No section headers while searching — just matching items
                     filtered.addAll(
                         allItems.filter { !it.isHeader() &&
-                                (it.name.lowercase().contains(query) ||
-                                        it.packageName.lowercase().contains(query))
+                            (it.name.lowercase().contains(query) ||
+                                it.packageName.lowercase().contains(query))
                         }
                     )
                 }
@@ -337,274 +292,130 @@ class VaultFragment : Fragment() {
             }
         }
 
-        dialog.show()
+        VaultDialogUi.showStyled(dialog)
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Add / Edit dialog
     // ─────────────────────────────────────────────────────────────────────────
     private fun showAddEditDialog(existing: PasswordEntry?, forceAdd: Boolean = false) {
-        val ctx    = requireContext()
+        val ctx = requireContext()
+        val pm  = ctx.packageManager
         val isEdit = existing != null && !forceAdd
-        val d      = resources.displayMetrics.density
-        fun dp(v: Int) = (v * d).toInt()
 
-        val scroll    = ScrollView(ctx)
-        val container = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(16), dp(20), dp(8))
-        }
-        scroll.addView(container)
+        val content = layoutInflater.inflate(R.layout.dialog_vault_add_password, null)
+        val etService = content.findViewById<EditText>(R.id.etService)
+        val etUsername = content.findViewById<EditText>(R.id.etUsername)
+        val etPassword = content.findViewById<EditText>(R.id.etPassword)
+        val btnGenerate = content.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnGeneratePassword)
+        val progressBar = content.findViewById<ProgressBar>(R.id.progressStrength)
+        val tvStrengthLabel = content.findViewById<TextView>(R.id.tvStrengthLabel)
+        val tvPositives = content.findViewById<TextView>(R.id.tvPositives)
+        val tvSuggestions = content.findViewById<TextView>(R.id.tvSuggestions)
+        val ivLinkedApp = content.findViewById<ImageView>(R.id.ivLinkedAppIcon)
+        val tvLinkedApp = content.findViewById<TextView>(R.id.tvLinkedAppName)
+        val btnChangeApp = content.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnChangeApp)
+        val switchCanary = content.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchCanary)
 
-        fun field(label: String, hint: String, inputType: Int): EditText {
-            container.addView(TextView(ctx).apply {
-                text = label; textSize = 12f
-                setTextColor(Color.parseColor("#757575"))
-            })
-            return EditText(ctx).apply {
-                this.hint = hint; this.inputType = inputType
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = dp(14) }
-            }.also { container.addView(it) }
-        }
+        var selectedPackageName = existing?.packageName.orEmpty()
+        var linkedDisplayName = existing?.service.orEmpty()
 
-        val etService  = field("Service / App Name *", "e.g. Gmail, BDO Online, Facebook",
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-        val etUsername = field("Username / Email", "e.g. juan@email.com",
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-
-        // Password row
-        container.addView(TextView(ctx).apply {
-            text = "Password *"; textSize = 12f
-            setTextColor(Color.parseColor("#757575"))
-        })
-        val passwordRow = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-        }
-        val etPassword = EditText(ctx).apply {
-            hint = "Enter or generate a password"
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            typeface  = Typeface.MONOSPACE
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        var pwVisible = false
-        val btnEye = ImageButton(ctx).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(36), dp(36))
-            setImageResource(R.drawable.ic_visibility); background = null
-            imageTintList = ColorStateList.valueOf(Color.parseColor("#757575"))
-        }
-        btnEye.setOnClickListener {
-            pwVisible = !pwVisible
-            etPassword.inputType = if (pwVisible)
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            else
-                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            etPassword.setSelection(etPassword.text.length)
-            btnEye.setImageResource(if (pwVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility)
-        }
-        passwordRow.addView(etPassword); passwordRow.addView(btnEye)
-        container.addView(passwordRow)
-
-        // Generate button
-        val btnGenerate = Button(ctx).apply {
-            text = "🎲 Generate Strong Password"; textSize = 12f
-            setTextColor(Color.parseColor("#1976D2")); background = null
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(4); bottomMargin = dp(4) }
-        }
-        container.addView(btnGenerate)
-
-        // Strength bar
-        val strengthRow = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(8) }
-        }
-        val progressBar = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = 100; layoutParams = LinearLayout.LayoutParams(0, dp(6), 1f)
-            progressBackgroundTintList = ColorStateList.valueOf(Color.parseColor("#E0E0E0"))
-        }
-        val tvStrengthLabel = TextView(ctx).apply {
-            text = "—"; textSize = 12f; setTypeface(null, Typeface.BOLD); minWidth = dp(72)
-            gravity = Gravity.END
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { marginStart = dp(10) }
-        }
-        strengthRow.addView(progressBar); strengthRow.addView(tvStrengthLabel)
-        container.addView(strengthRow)
-
-        val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) }
-        val tvPositives   = TextView(ctx).apply { textSize = 11f; setTextColor(Color.parseColor("#4CAF50")); setLineSpacing(0f, 1.4f); layoutParams = lp }
-        val tvSuggestions = TextView(ctx).apply { textSize = 11f; setTextColor(Color.parseColor("#FF9800")); setLineSpacing(0f, 1.4f); layoutParams = lp }
-        container.addView(tvPositives); container.addView(tvSuggestions)
-
-        // Divider
-        container.addView(View(ctx).apply {
-            setBackgroundColor(Color.parseColor("#E0E0E0"))
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply { topMargin = dp(16); bottomMargin = dp(16) }
-        })
-
-        // ── App Picker — replaces package name text field ─────────────────────
-        container.addView(TextView(ctx).apply {
-            text = "Link to App (for auto-fill)"; textSize = 12f
-            setTextColor(Color.parseColor("#757575"))
-        })
-
-        // Stores the actual package name silently
-        var selectedPackageName = existing?.packageName ?: ""
-
-        // Shows the human-readable app name
-        val tvSelectedApp = TextView(ctx).apply {
-            textSize = 13f
-            setTextColor(Color.parseColor("#212121"))
-            text = if (selectedPackageName.isNotEmpty()) {
-                // Try to resolve existing package name back to app label
-                try {
-                    requireContext().packageManager
-                        .getApplicationLabel(
-                            requireContext().packageManager.getApplicationInfo(selectedPackageName, 0)
-                        ).toString()
-                } catch (e: Exception) { selectedPackageName }
-            } else "No app linked"
-        }
-
-
-        val swCanary = android.widget.Switch(ctx).apply {
-            text = "🪤 Mark as canary (alert on use)"
-            textSize = 12f
-            isChecked = existing?.isCanary ?: false
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
-        container.addView(swCanary)
-        container.addView(TextView(ctx).apply {
-            text = "💡 Use a real but monitored throwaway account. CipherLock will alert " +
-                    "you (and log a breach event) the first time anyone fills this credential."
-            textSize = 11f
-            setTextColor(android.graphics.Color.parseColor("#9E9E9E"))
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        })
-
-
-        val btnPickApp = Button(ctx).apply {
-            text = if (selectedPackageName.isEmpty()) "📱 Pick App" else "📱 Change App"
-            textSize = 12f
-            setTextColor(Color.WHITE)
-            backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1976D2"))
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(6); bottomMargin = dp(4) }
-        }
-
-        // App row: selected name + pick button side by side
-        val appRow = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity     = Gravity.CENTER_VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(6) }
-        }
-        tvSelectedApp.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        appRow.addView(tvSelectedApp)
-        appRow.addView(btnPickApp)
-        container.addView(appRow)
-
-        container.addView(TextView(ctx).apply {
-            text = "💡 CHIPHERLOCK will offer this password when you open that app"
-            textSize = 11f; setTextColor(Color.parseColor("#9E9E9E"))
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) }
-        })
-
-        // Pick app tapped
-        btnPickApp.setOnClickListener {
-            showAppPicker { appName, packageName ->
-                selectedPackageName      = packageName
-                tvSelectedApp.text       = appName
-                btnPickApp.text          = "📱 Change App"
+        fun resolveAppLabel(packageName: String): String {
+            if (packageName.isBlank()) return getString(R.string.no_app_linked)
+            return try {
+                pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString()
+            } catch (_: Exception) {
+                linkedDisplayName.ifBlank { packageName }
             }
         }
 
-        // Pre-fill for edit
-        existing?.let {
-            etService.setText(it.service)
-            etUsername.setText(it.username)
-            etPassword.setText(String(it.password))   // EditText accepts CharSequence only
+        fun refreshLinkedApp() {
+            val label = if (linkedDisplayName.isNotBlank()) linkedDisplayName else resolveAppLabel(selectedPackageName)
+            tvLinkedApp.text = if (selectedPackageName.isBlank()) getString(R.string.no_app_linked) else label
+            VaultDialogUi.bindAppIcon(pm, selectedPackageName, ivLinkedApp)
+            btnChangeApp.text = if (selectedPackageName.isBlank()) getString(R.string.pick_app) else getString(R.string.change_app)
         }
 
-        // Live strength
         fun refreshStrength(pw: String) {
             val r = PasswordStrengthAnalyzer.analyze(pw)
             val c = Color.parseColor(r.strength.colorHex)
             progressBar.progress = r.score
             progressBar.progressTintList = ColorStateList.valueOf(c)
-            tvStrengthLabel.text = r.strength.label; tvStrengthLabel.setTextColor(c)
-            tvPositives.text   = if (r.positives.isEmpty())   "" else "✅ " + r.positives.joinToString("\n✅ ")
-            tvSuggestions.text = if (r.suggestions.isEmpty()) "" else "💡 " + r.suggestions.joinToString("\n💡 ")
+            tvStrengthLabel.text = r.strength.label
+            tvStrengthLabel.setTextColor(c)
+            tvPositives.text = if (r.positives.isEmpty()) "" else "✓ " + r.positives.joinToString("\n✓ ")
+            tvSuggestions.text = if (r.suggestions.isEmpty()) "" else "• " + r.suggestions.joinToString("\n• ")
         }
+
+        existing?.let {
+            etService.setText(it.service)
+            etUsername.setText(it.username)
+            etPassword.setText(String(it.password))
+            switchCanary.isChecked = it.isCanary
+            linkedDisplayName = it.service
+            selectedPackageName = it.packageName
+            refreshStrength(String(it.password))
+        }
+        refreshLinkedApp()
+
         etPassword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) { refreshStrength(s.toString()) }
         })
-        existing?.let { refreshStrength(String(it.password)) }
 
         btnGenerate.setOnClickListener {
-            val generated = PasswordGenerator.generate(PasswordGenerator.Options())
-            if (generated != null) {
-                etPassword.setText(generated)
-                etPassword.setSelection(generated.length)
-                pwVisible = true
-                etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                btnEye.setImageResource(R.drawable.ic_visibility_off)
-                Toast.makeText(ctx, "Strong password generated!", Toast.LENGTH_SHORT).show()
-            }
+            val generated = PasswordGenerator.generate(PasswordGenerator.Options()) ?: return@setOnClickListener
+            etPassword.setText(generated)
+            etPassword.setSelection(generated.length)
+            Toast.makeText(ctx, "Strong password generated!", Toast.LENGTH_SHORT).show()
         }
 
-        AlertDialog.Builder(ctx)
-            .setTitle(if (isEdit) "Edit Password" else "Add Password")
-            .setView(scroll)
-            .setPositiveButton(if (isEdit) "Save" else "Add", null)
-            .setNegativeButton("Cancel", null)
-            .create()
-            .also { dialog ->
-                dialog.show()
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    val service  = etService.text.toString().trim()
-                    val editable = etPassword.text
-                    val pwChars  = CharArray(editable.length).also { editable.getChars(0, editable.length, it, 0) }
-                    if (service.isEmpty() || pwChars.isEmpty()) {
-                        Toast.makeText(ctx, "Service name and password are required", Toast.LENGTH_SHORT).show()
-                        java.util.Arrays.fill(pwChars, '\u0000')
-                        return@setOnClickListener
-                    }
-                    val entry = PasswordEntry(
-                        id          = existing?.id ?: UUID.randomUUID().toString(),
-                        service     = service,
-                        username    = etUsername.text.toString().trim(),
-                        password    = pwChars,
-                        packageName = selectedPackageName,
-                        timestamp   = existing?.timestamp ?: System.currentTimeMillis(),
-                        isCanary    = swCanary.isChecked          // Layer 2
-                    )
-                    if (isEdit) updateEntry(entry) else addEntry(entry)
-                    editable.clear()
-                    dialog.dismiss()
-                }
-
+        val openAppPicker = {
+            showAppPicker { appName, packageName ->
+                selectedPackageName = packageName
+                linkedDisplayName = appName
+                if (etService.text.isNullOrBlank()) etService.setText(appName)
+                refreshLinkedApp()
             }
+        }
+        btnChangeApp.setOnClickListener { openAppPicker() }
+        content.findViewById<View>(R.id.layoutLinkedApp).setOnClickListener { openAppPicker() }
+
+        val dialog = VaultDialogUi.builder(ctx)
+            .setTitle(if (isEdit) R.string.edit_password_title else R.string.add_password_title)
+            .setView(content)
+            .setPositiveButton(if (isEdit) android.R.string.ok else R.string.add_password, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).text = if (isEdit) "Save" else "Add"
+        }
+
+        VaultDialogUi.showStyled(dialog)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val service = etService.text.toString().trim()
+            val editable = etPassword.text
+            val pwChars = CharArray(editable.length).also { editable.getChars(0, editable.length, it, 0) }
+            if (service.isEmpty() || pwChars.isEmpty()) {
+                Toast.makeText(ctx, "Service name and password are required", Toast.LENGTH_SHORT).show()
+                java.util.Arrays.fill(pwChars, '\u0000')
+                return@setOnClickListener
+            }
+            val entry = PasswordEntry(
+                id = existing?.id ?: UUID.randomUUID().toString(),
+                service = service,
+                username = etUsername.text.toString().trim(),
+                password = pwChars,
+                packageName = selectedPackageName,
+                timestamp = existing?.timestamp ?: System.currentTimeMillis(),
+                isCanary = switchCanary.isChecked
+            )
+            if (isEdit) updateEntry(entry) else addEntry(entry)
+            editable.clear()
+            dialog.dismiss()
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -622,9 +433,8 @@ class VaultFragment : Fragment() {
 
         val tvGenerated = TextView(ctx).apply {
             textSize = 15f; typeface = Typeface.MONOSPACE
-            setTextColor(Color.parseColor("#212121"))
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
-            setPadding(dp(12), dp(12), dp(12), dp(12))
+            setTextColor(CipherPalette.textPrimary)
+            setPadding(0, dp(4), 0, dp(4))
             text = "Generating..."
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(8) }
         }
@@ -636,7 +446,7 @@ class VaultFragment : Fragment() {
         }
         val progressBar = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = 100; layoutParams = LinearLayout.LayoutParams(0, dp(6), 1f)
-            progressBackgroundTintList = ColorStateList.valueOf(Color.parseColor("#E0E0E0"))
+            progressBackgroundTintList = ColorStateList.valueOf(CipherPalette.outlineSoft)
         }
         val tvStrength = TextView(ctx).apply {
             textSize = 12f; setTypeface(null, Typeface.BOLD); minWidth = dp(80); gravity = Gravity.END
@@ -646,7 +456,7 @@ class VaultFragment : Fragment() {
         container.addView(strengthRow)
 
         fun label(text: String) = TextView(ctx).apply {
-            this.text = text; textSize = 12f; setTextColor(Color.parseColor("#757575"))
+            this.text = text; textSize = 12f; setTextColor(CipherPalette.textSecondary)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) }
         }
         fun toggle(label: String, checked: Boolean) = CheckBox(ctx).apply { text = label; isChecked = checked; textSize = 13f }
@@ -699,20 +509,20 @@ class VaultFragment : Fragment() {
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
 
-        AlertDialog.Builder(ctx)
-            .setTitle("🎲 Generate Password")
+        VaultDialogUi.builder(ctx)
+            .setTitle("Generate Password")
             .setView(ScrollView(ctx).also { it.addView(container) })
             .setPositiveButton("Copy & Save to Vault", null)
-            .setNeutralButton("🔄 Regenerate") { _, _ -> }
+            .setNeutralButton("Regenerate") { _, _ -> }
             .setNegativeButton("Copy Only") { _, _ ->
                 if (currentPassword.isNotEmpty()) {
                     copyToClipboard(text = currentPassword.toCharArray(), showToast = false)
-                    Toast.makeText(ctx, "✅ Copied! Go paste it in the other app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "Copied! Go paste it in the other app.", Toast.LENGTH_LONG).show()
                 }
             }
             .create()
             .also { dialog ->
-                dialog.show()
+                VaultDialogUi.showStyled(dialog)
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener { regenerate() }
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     if (currentPassword.isEmpty()) return@setOnClickListener
@@ -722,7 +532,7 @@ class VaultFragment : Fragment() {
                         inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         setPadding(dp(16), dp(8), dp(16), dp(8))
                     }
-                    AlertDialog.Builder(ctx)
+                    VaultDialogUi.builder(ctx)
                         .setTitle("Save to Vault")
                         .setMessage("What service is this password for?")
                         .setView(nameInput)
@@ -730,14 +540,15 @@ class VaultFragment : Fragment() {
                             val service = nameInput.text.toString().trim()
                             if (service.isEmpty()) { Toast.makeText(ctx, "Enter a service name", Toast.LENGTH_SHORT).show(); return@setPositiveButton }
                             addEntry(PasswordEntry(service = service, username = "", password = currentPassword.toCharArray()))
-                            Toast.makeText(ctx, "✅ Saved! Go paste it in the other app.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(ctx, "Saved! Go paste it in the other app.", Toast.LENGTH_LONG).show()
                             dialog.dismiss()
                         }
                         .setNegativeButton("Skip — just copy") { _, _ ->
-                            Toast.makeText(ctx, "✅ Copied! Go paste it.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(ctx, "Copied! Go paste it.", Toast.LENGTH_LONG).show()
                             dialog.dismiss()
                         }
-                        .show()
+                        .create()
+                        .also { saveDialog -> VaultDialogUi.showStyled(saveDialog) }
                 }
             }
     }
@@ -756,14 +567,19 @@ class VaultFragment : Fragment() {
     }
 
     private fun confirmDelete(entry: PasswordEntry) {
-        AlertDialog.Builder(requireContext())
+        VaultDialogUi.builder(requireContext())
             .setTitle("Delete entry?")
             .setMessage("Remove '${entry.service}' from your vault?")
             .setPositiveButton("Delete") { _, _ ->
                 val idx = entries.indexOfFirst { it.id == entry.id }
                 if (idx >= 0) { entries.removeAt(idx); saveEntries(); adapter.notifyItemRemoved(idx); refreshEmpty() }
             }
-            .setNegativeButton("Cancel", null).show()
+            .setNegativeButton("Cancel", null)
+            .create()
+            .also { dialog ->
+                VaultDialogUi.showStyled(dialog)
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(CipherPalette.danger)
+            }
     }
 
 
@@ -812,7 +628,7 @@ class VaultFragment : Fragment() {
         } catch (e: javax.crypto.AEADBadTagException) {
             if (com.chipherlock.app.BuildConfig.DEBUG) android.util.Log.e("VaultFragment", "GCM auth tag failure", e)
             Toast.makeText(requireContext(),
-                "⚠️ Vault integrity check failed.", Toast.LENGTH_LONG).show()
+                "Vault integrity check failed.", Toast.LENGTH_LONG).show()
             adapter.notifyDataSetChanged()
             return
         }
@@ -882,7 +698,7 @@ class VaultFragment : Fragment() {
         if (!RevocationCheck.isRemotelyLocked(ctx)) return
         com.google.android.material.snackbar.Snackbar.make(
             recyclerView,
-            "⚠️ This device is marked as lost. Use master password to recover.",
+            "This device is marked as lost. Use master password to recover.",
             com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE
         ).setAction("I have my phone") {
             VaultAuthManager.prompt(
@@ -975,7 +791,7 @@ class VaultAdapter(
             layoutParams = LinearLayout.LayoutParams(dp(44), dp(44))
             gravity = Gravity.CENTER; textSize = 18f; setTypeface(null, Typeface.BOLD)
             setTextColor(Color.WHITE)
-            background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(Color.parseColor("#1976D2")) }
+            background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(CipherPalette.primary) }
         }
         row.addView(tvAvatar)
 
@@ -985,7 +801,7 @@ class VaultAdapter(
         }
         val topRow = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val tvService = TextView(ctx).apply {
-            textSize = 15f; setTypeface(null, Typeface.BOLD); setTextColor(Color.parseColor("#212121"))
+            textSize = 15f; setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textPrimary)
             maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
@@ -997,27 +813,27 @@ class VaultAdapter(
         topRow.addView(tvService); topRow.addView(tvBadge); textBlock.addView(topRow)
 
         val tvUser = TextView(ctx).apply {
-            textSize = 12f; setTextColor(Color.parseColor("#757575")); maxLines = 1
+            textSize = 12f; setTextColor(CipherPalette.textSecondary); maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(2) }
         }
         textBlock.addView(tvUser)
 
         val tvPass = TextView(ctx).apply {
-            textSize = 13f; setTextColor(Color.parseColor("#424242")); typeface = Typeface.MONOSPACE
+            textSize = 13f; setTextColor(CipherPalette.textSecondary); typeface = Typeface.MONOSPACE
             maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) }
         }
         textBlock.addView(tvPass)
 
         val barStrength = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = 100; progressBackgroundTintList = ColorStateList.valueOf(Color.parseColor("#E0E0E0"))
+            max = 100; progressBackgroundTintList = ColorStateList.valueOf(CipherPalette.outlineSoft)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(4)).apply { topMargin = dp(8) }
         }
         textBlock.addView(barStrength)
 
         val tvDate = TextView(ctx).apply {
-            textSize = 10f; setTextColor(Color.parseColor("#BDBDBD"))
+            textSize = 10f; setTextColor(CipherPalette.textMuted)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) }
         }
         textBlock.addView(tvDate)
@@ -1058,7 +874,7 @@ class VaultAdapter(
         (holder.tvAvatar.background as GradientDrawable).setColor(color)
         holder.tvService.text = entry.service
         holder.tvUser.text    = entry.username.ifEmpty { "No username saved" }
-        holder.tvService.text = if (entry.isCanary) "🪤 ${entry.service}" else entry.service
+        holder.tvService.text = if (entry.isCanary) "${entry.service}" else entry.service
         holder.tvPass.text    = if (isShown) String(entry.password) else "••••••••••••"
 
         holder.tvDate.text    = dateFmt.format(Date(entry.timestamp))

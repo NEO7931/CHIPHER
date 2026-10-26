@@ -42,7 +42,7 @@ object CanaryAlert {
         val attacker = attackerPackage ?: "unknown"
         val notif = NotificationCompat.Builder(ctx, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("🚨 Security alert — possible breach")
+            .setContentTitle("Security alert — possible breach")
             .setContentText("Canary credential used for \"$service\" by $attacker")
             .setStyle(NotificationCompat.BigTextStyle().bigText(
                 "A protected canary credential for \"$service\" was just used by " +

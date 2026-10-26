@@ -11,7 +11,7 @@ data class ScamHistoryEntry(
     val category:       String,
     val factors:        List<ScoreFactor> = emptyList(),
     val timestamp:      Long = System.currentTimeMillis(),
-    val source:         String = ""                    // e.g. "Manual Scan", "Auto-Scan", "🗑️ Deleted"
+    val source:         String = ""                    // e.g. "Manual Scan", "Auto-Scan", "Deleted"
 ) {
     fun toJson(): JSONObject {
         val factorsArray = JSONArray()
@@ -51,7 +51,7 @@ data class ScamHistoryEntry(
                     obj.optString("body", "")),
                 riskScore      = obj.optInt(   "riskScore",      0),
                 riskLevel      = obj.optString("riskLevel",      "LOW"),
-                category       = obj.optString("category",       "⚠️ Suspicious"),
+                category       = obj.optString("category",       "Suspicious"),
                 factors        = factorsList,
                 timestamp      = obj.optLong(  "timestamp",      System.currentTimeMillis()),
                 source         = obj.optString("source",         "")

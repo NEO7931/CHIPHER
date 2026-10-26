@@ -1,3 +1,6 @@
 <resources>
-    <dimen name="fab_margin">200dp</dimen>
+    <dimen name="fab_margin">32dp</dimen>
+    <dimen name="screen_padding">48dp</dimen>
+    <dimen name="section_spacing">32dp</dimen>
+    <dimen name="card_padding">28dp</dimen>
 </resources>

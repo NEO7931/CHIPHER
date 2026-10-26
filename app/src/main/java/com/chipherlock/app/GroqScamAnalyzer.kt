@@ -35,7 +35,7 @@ import okhttp3.CertificatePinner
 //   • 14,400 requests/day
 //   • Resets automatically — plenty for real-world SMS scanning
 //
-// ⚠️  DEMO ONLY — API key is hard-coded in the APK.
+// DEMO ONLY — API key is hard-coded in the APK.
 //     Before shipping to production, move the key to a secure backend
 //     (e.g. Firebase Cloud Function) so it can't be extracted from the APK.
 // ═══════════════════════════════════════════════════════════════════════════
@@ -86,7 +86,7 @@ object GroqScamAnalyzer {
         val risk: String,        // "LOW" | "MEDIUM" | "HIGH" | "UNKNOWN"
         val reason: String,      // one-sentence explanation OR the error message
         val success: Boolean,    // false if the API call failed for any reason
-        val category: String = "⚠️ Suspicious"  // V7: AI-identified attack type
+        val category: String = "Suspicious"  // V7: AI-identified attack type
     )
 
     // -----------------------------------------------------------------------
@@ -230,14 +230,14 @@ object GroqScamAnalyzer {
            Claims to have compromising INTIMATE/SEXUAL photos or videos,
            threats to send them to contacts unless paid. Often includes a
            Bitcoin address or GCash number. Score HIGH (90+).
-           Category: "💔 Sextortion"
+           Category: "Sextortion"
 
         8. KIDNAPPING / EXTORTION THREATS
            Claims to have kidnapped a family member, threats of physical
            harm, demands for ransom money. "Hostage namin si [name]",
            "Patayin namin siya", "Bigay mo ang pera". Often in Tagalog
            with urgency and large peso amounts. Score HIGH (90+).
-           Category: "🔪 Extortion/Kidnap"
+           Category: "Extortion/Kidnap"
 
         9. ROMANCE SCAM
            Stranger expresses romantic interest unusually fast, may claim
@@ -246,14 +246,14 @@ object GroqScamAnalyzer {
            without a money request yet, score MEDIUM (50+) for unsolicited
            romantic contact from unknown number. Score HIGH (75+) if money
            or investment is mentioned.
-           Category: "💑 Romance Scam"
+           Category: "Romance Scam"
 
         10. FAKE EMERGENCY / PERSONAL IMPERSONATION
             Claims to be a family member or friend in crisis: hospital,
             accident, jail, or stranded. "Mama, ako ito, na-ospital ako",
             "Kuya nandito ako sa presinto, paki-bail". Often asks for
             GCash or load immediately. Score HIGH (80+).
-            Category: "🆘 Fake Emergency" or "👤 Personal Impersonation"
+            Category: "Fake Emergency" or "Personal Impersonation"
 
         11. CRYPTO / NFT / PIG BUTCHERING
             Unsolicited mention of crypto trading groups, guaranteed profits,
@@ -261,26 +261,26 @@ object GroqScamAnalyzer {
             codes. Pig butchering: builds trust first then introduces
             "investment opportunity". Score HIGH (75+) even without an
             explicit money request — the pitch itself is the scam.
-            Category: "💱 Crypto/NFT Scam"
+            Category: "Crypto/NFT Scam"
 
         12. MARKETPLACE / ADVANCE FEE FRAUD
             Fake buyer overpays and asks for refund, fake seller asks for
             advance payment before delivery, fake escrow services for
             Carousell/Facebook Marketplace deals. Score HIGH (75+) for
             any "overpayment refund" or "advance fee before delivery" pattern.
-            Category: "🛒 Marketplace Scam"
+            Category: "Marketplace Scam"
 
         13. UTILITY / SERVICE DISCONNECTION
             Claims to be Meralco, Maynilad, PLDT, Globe, or DITO with
             a disconnection threat unless payment is made immediately via
             GCash or link. Real utilities never demand instant SMS payment.
-            Score HIGH (80+). Category: "💡 Utility Threat"
+            Score HIGH (80+). Category: "Utility Threat"
 
         14. SIM SWAP / ACCOUNT TAKEOVER
             Asks victim to confirm personal details "for SIM registration",
             requests forwarding of an OTP "by mistake", or impersonates
             Globe/Smart to "upgrade" the SIM. Score HIGH (85+).
-            Category: "📲 SIM Swap" or "🧑‍💻 Account Takeover"
+            Category: "SIM Swap" or "Account Takeover"
 
         15. DATA HARVESTING
             Disguised as a survey, raffle entry, loyalty program, or
@@ -288,7 +288,7 @@ object GroqScamAnalyzer {
             mother's maiden name, or government ID numbers. No obvious
             scam keywords — just systematic personal data collection.
             Score MEDIUM (45+) for any unsolicited data collection form.
-            Category: "📋 Data Harvesting"
+            Category: "Data Harvesting"
 
         ──────────────────────────────────────────────────────────────────
         OBVIOUS SCAM INDICATORS (the keyword list also catches these — you
@@ -406,47 +406,47 @@ object GroqScamAnalyzer {
         CATEGORY LABELS (pick the single best match):
 
         FINANCIAL & ACCOUNT:
-          "💳 Financial Fraud"         — bank/e-wallet impersonation, GCash/Maya account scams
-          "💰 Loan/Investment Scam"    — fast loans, guaranteed returns, Ponzi/pyramid, paluwagan fraud
-          "💱 Crypto/NFT Scam"         — fake crypto trading, NFT investment, pig butchering schemes
-          "🔑 Credential Theft"        — OTP harvesting, password/PIN requests, login hijack
-          "📲 SIM Swap"                — convincing victim to transfer/give up their SIM or number
-          "🧑‍💻 Account Takeover"        — impersonating a service to hijack social media, email, GCash
+          "Financial Fraud"         — bank/e-wallet impersonation, GCash/Maya account scams
+          "Loan/Investment Scam"    — fast loans, guaranteed returns, Ponzi/pyramid, paluwagan fraud
+          "Crypto/NFT Scam"         — fake crypto trading, NFT investment, pig butchering schemes
+          "Credential Theft"        — OTP harvesting, password/PIN requests, login hijack
+          "SIM Swap"                — convincing victim to transfer/give up their SIM or number
+          "Account Takeover"        — impersonating a service to hijack social media, email, GCash
 
         LINKS & TECH:
-          "🔗 Phishing Link"           — lookalike domains, suspicious URLs, link-based credential traps
-          "🦠 Malware Link"            — links that download spyware, stalkerware, or RATs to the device
-          "🖥️ Tech Support Scam"       — fake IT/device support, remote access requests
+          "Phishing Link"           — lookalike domains, suspicious URLs, link-based credential traps
+          "Malware Link"            — links that download spyware, stalkerware, or RATs to the device
+          "Tech Support Scam"       — fake IT/device support, remote access requests
 
         IDENTITY & SOCIAL:
-          "🤖 Social Engineering"      — relationship building, fishing for personal info from unknown sender
-          "💑 Romance Scam"            — fake romantic interest leading to money requests or investment pitch
-          "👤 Personal Impersonation"  — pretending to be a friend, family member, or classmate in need
-          "🆘 Fake Emergency"          — false claims that a family member is hospitalized, arrested, or in danger
+          "Social Engineering"      — relationship building, fishing for personal info from unknown sender
+          "Romance Scam"            — fake romantic interest leading to money requests or investment pitch
+          "Personal Impersonation"  — pretending to be a friend, family member, or classmate in need
+          "Fake Emergency"          — false claims that a family member is hospitalized, arrested, or in danger
 
         PRIZES & REWARDS:
-          "🎰 Prize/Lottery Scam"      — fake lottery wins, raffle prizes, voucher claims, ayuda release
+          "Prize/Lottery Scam"      — fake lottery wins, raffle prizes, voucher claims, ayuda release
 
         GOVERNMENT & AUTHORITY:
-          "🏛️ Gov't Impersonation"     — fake SSS, PhilHealth, DSWD, NBI, BIR, DOLE, barangay officials
-          "⚖️ Legal Threat"            — fake arrest warrants, court summons, NBI entrapment threats
-          "💡 Utility Threat"          — fake Meralco, Maynilad, PLDT, Globe disconnection notices
+          "Gov't Impersonation"     — fake SSS, PhilHealth, DSWD, NBI, BIR, DOLE, barangay officials
+          "Legal Threat"            — fake arrest warrants, court summons, NBI entrapment threats
+          "Utility Threat"          — fake Meralco, Maynilad, PLDT, Globe disconnection notices
 
         JOB & COMMERCE:
-          "💼 Job/Task Scam"           — fake job offers, work-from-home, like-and-earn, product review tasks
-          "🛒 Marketplace Scam"        — fake Lazada/Shopee sellers, bogus buy/sell, advance fee fraud
-          "📦 Delivery/Parcel Scam"    — fake LBC/J&T/Ninja Van interception, redelivery fee demands
+          "Job/Task Scam"           — fake job offers, work-from-home, like-and-earn, product review tasks
+          "Marketplace Scam"        — fake Lazada/Shopee sellers, bogus buy/sell, advance fee fraud
+          "Delivery/Parcel Scam"    — fake LBC/J&T/Ninja Van interception, redelivery fee demands
 
         HEALTH & CHARITY:
-          "🏥 Medical/Health Scam"     — fake medicines, miracle supplements, fake health authority
-          "🤝 Charity/Relief Scam"     — fake typhoon/calamity relief, donation solicitation fraud
+          "Medical/Health Scam"     — fake medicines, miracle supplements, fake health authority
+          "Charity/Relief Scam"     — fake typhoon/calamity relief, donation solicitation fraud
 
         THREATS:
-          "💔 Sextortion"              — blackmail specifically using intimate/sexual content or images
-          "🔪 Extortion/Kidnap"        — ransom demands, kidnapping threats, harm threats, hostage scams
+          "Sextortion"              — blackmail specifically using intimate/sexual content or images
+          "Extortion/Kidnap"        — ransom demands, kidnapping threats, harm threats, hostage scams
 
         OTHER:
-          "📋 Data Harvesting"         — disguised surveys or forms collecting personal/financial info
+          "Data Harvesting"         — disguised surveys or forms collecting personal/financial info
           "New Message"                — not a scam, benign message
     """.trimIndent()
 
@@ -500,7 +500,7 @@ object GroqScamAnalyzer {
                 aiScore  = parsed.getInt("score").coerceIn(0, 100),
                 risk     = parsed.optString("risk",     "UNKNOWN").uppercase(),
                 reason   = parsed.optString("reason",   "No explanation provided"),
-                category = parsed.optString("category", "⚠️ Suspicious"),
+                category = parsed.optString("category", "Suspicious"),
                 success  = true
             )
         } catch (e: Exception) {

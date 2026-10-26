@@ -28,14 +28,14 @@ import android.widget.TextView
 object ScoreBreakdownUI {
 
     // Colors kept here so both cards stay visually identical
-    private const val RISK_HIGH    = "#D32F2F"   // red
-    private const val RISK_MEDIUM  = "#E65100"   // orange
-    private const val RISK_LOW     = "#2E7D32"   // green
-    private const val ACCENT_BLUE  = "#1976D2"   // header/links
-    private const val TEXT_PRIMARY = "#212121"
-    private const val TEXT_MUTED   = "#616161"
-    private const val BG_CARD      = "#F5F5F5"
-    private const val BG_ROW_SOFT  = "#FFFFFF"
+    private const val RISK_HIGH    = "#FF6B7A"   // red
+    private const val RISK_MEDIUM  = "#F5C451"   // amber
+    private const val RISK_LOW     = "#69D391"   // green
+    private const val ACCENT_BLUE  = "#35D6C1"   // header/links
+    private const val TEXT_PRIMARY = "#E9F4F7"
+    private const val TEXT_MUTED   = "#A9BBC5"
+    private const val BG_CARD      = "#142432"
+    private const val BG_ROW_SOFT  = "#0D1924"
 
     // -----------------------------------------------------------------------
     // Public API
@@ -49,9 +49,9 @@ object ScoreBreakdownUI {
      *   │  RISK: HIGH               100 / 100 │
      *   │                                     │
      *   │  Detection results:                 │
-     *   │  ✅ Keyword Scan                    │
+     *   │  Keyword Scan                    │
      *   │     Found 12 suspicious phrases     │
-     *   │  ❌ AI Double-Check                 │
+     *   │  AI Double-Check                 │
      *   │     Couldn't run — used keywords    │
      *   │                                     │
      *   │  ▼ See what triggered the alert     │
@@ -68,12 +68,13 @@ object ScoreBreakdownUI {
 
         // Classify factors into the two detection streams.
         //   AI factors are the ones SmsFragment.fuseBreakdowns emits with
-        //   either "🤖 AI verdict: ..." (AI succeeded) or
-        //   "⚠️ AI unavailable ..." (AI failed). Everything else is keyword.
-        val aiVerdictFactor     = breakdown.factors.firstOrNull { it.label.startsWith("🤖 AI") }
-        val aiUnavailableFactor = breakdown.factors.firstOrNull { it.label.startsWith("⚠️ AI") }
+        //   either "AI verdict: ..." (AI succeeded) or
+        //   "AI unavailable ..." (AI failed). Everything else is keyword.
+        //   Older saved entries still carry an emoji prefix, so match on contains().
+        val aiVerdictFactor     = breakdown.factors.firstOrNull { it.label.contains("AI verdict") }
+        val aiUnavailableFactor = breakdown.factors.firstOrNull { it.label.contains("AI unavailable") }
         val keywordFactors      = breakdown.factors.filter {
-            !it.label.startsWith("🤖 AI") && !it.label.startsWith("⚠️ AI")
+            !it.label.contains("AI verdict") && !it.label.contains("AI unavailable")
         }
 
         val aiSucceeded   = aiVerdictFactor != null
@@ -118,7 +119,7 @@ object ScoreBreakdownUI {
         // ── Keyword Scan row ──────────────────────────────────────────────
         outer.addView(buildDetectionRow(
             context, dp,
-            icon  = if (keywordCount > 0) "✅" else "⚪",
+            icon  = if (keywordCount > 0) "✓" else "–",
             title = "Keyword Scan",
             detail = when {
                 keywordCount == 0 -> "No suspicious phrases found"
@@ -131,18 +132,18 @@ object ScoreBreakdownUI {
         val (aiIcon, aiDetail) = when {
             aiSucceeded -> {
                 // Pull the AI's reason out of the label.
-                // Label format: "🤖 AI verdict: HIGH — <reason>"
+                // Label format: "AI verdict: HIGH — <reason>"
                 val raw = aiVerdictFactor!!.label
                 val reason = raw.substringAfter(" — ", "").ifBlank { raw }
-                "✅" to "Confirmed: $reason"
+                "✓" to "Confirmed: $reason"
             }
             aiUnavailableFactor != null -> {
-                "❌" to "Couldn't run — used keywords only"
+                "✗" to "Couldn't run — used keywords only"
             }
             else -> {
                 // No AI factor at all — analysis ran before fusion was added,
                 // or AI was skipped (e.g. no suspicious signals to verify).
-                "➖" to "Not run for this message"
+                "–" to "Not run for this message"
             }
         }
         outer.addView(buildDetectionRow(

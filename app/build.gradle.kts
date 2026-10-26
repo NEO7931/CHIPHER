@@ -8,8 +8,12 @@ val localProps = Properties().also { props ->
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+}
+
+// Firebase is only used by release builds; google-services.json is kept out of the repo.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
@@ -65,10 +69,6 @@ dependencies {
 
     // Security - Encrypted storage (AES-256)
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
-
-    // Navigation component
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
 
     // Lifecycle & ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")

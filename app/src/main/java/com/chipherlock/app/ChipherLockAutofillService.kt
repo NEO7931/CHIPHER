@@ -44,7 +44,7 @@ class ChipherLockAutofillService : AutofillService() {
 
         matches.forEach { entry ->
             val presentation = RemoteViews(packageName, android.R.layout.simple_list_item_2).apply {
-                setTextViewText(android.R.id.text1, "🔑 ${entry.service}")
+                setTextViewText(android.R.id.text1, "${entry.service}")
                 setTextViewText(android.R.id.text2, entry.username.ifEmpty { "Tap to fill" })
             }
 

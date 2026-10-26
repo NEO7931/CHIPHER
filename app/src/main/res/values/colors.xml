@@ -2,4 +2,40 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- CHIPHERLOCK dark security palette -->
+    <color name="cipher_background">#071018</color>
+    <color name="cipher_surface">#0D1924</color>
+    <color name="cipher_surface_high">#142432</color>
+    <color name="cipher_surface_highest">#1B3040</color>
+    <color name="cipher_outline">#2C4557</color>
+    <color name="cipher_outline_soft">#1D3342</color>
+
+    <color name="cipher_primary">#35D6C1</color>
+    <color name="cipher_primary_dark">#0D8F85</color>
+    <color name="cipher_primary_container">#123D3C</color>
+    <color name="cipher_on_primary">#00201C</color>
+
+    <color name="cipher_text_primary">#E9F4F7</color>
+    <color name="cipher_text_secondary">#A9BBC5</color>
+    <color name="cipher_text_muted">#738A97</color>
+
+    <color name="cipher_success">#69D391</color>
+    <color name="cipher_success_container">#163B2A</color>
+    <color name="cipher_warning">#F5C451</color>
+    <color name="cipher_warning_container">#493A14</color>
+    <color name="cipher_danger">#FF6B7A</color>
+    <color name="cipher_danger_container">#4B2029</color>
+    <color name="cipher_info">#62B5FF</color>
+    <color name="cipher_info_container">#153A57</color>
+
+    <color name="cipher_nav_selected">#35D6C1</color>
+    <color name="cipher_nav_unselected">#78909C</color>
+    <color name="cipher_scrim">#B3000000</color>
+
+    <!-- Translucent tints of the existing surfaces. Alpha only — no new hues. -->
+    <color name="cipher_glass">#E60D1924</color>
+    <color name="cipher_glass_field">#661B3040</color>
+    <color name="cipher_glass_stroke">#5935D6C1</color>
+    <color name="cipher_glass_stroke_soft">#332C4557</color>
 </resources>

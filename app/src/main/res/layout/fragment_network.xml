@@ -1,55 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/cipher_background"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/screen_padding">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/network_title"
+        android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Title" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:text="Network Monitor"
-        android:textColor="#1A1A2E"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="4dp"
+        android:text="@string/network_subtitle"
+        android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Body" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:text="Detects unsafe WiFi, evil twins and network threats"
-        android:textColor="#666666"
-        android:textSize="14sp" />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_scan_network"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#E63946"
-        android:padding="14dp"
-        android:text="SCAN ALL NEARBY NETWORKS"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold" />
+        android:layout_marginTop="20dp"
+        android:minHeight="54dp"
+        android:text="@string/scan_network"
+        android:textColor="@color/cipher_on_primary"
+        android:textStyle="bold"
+        app:backgroundTint="@color/cipher_primary"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_network"
+        app:iconGravity="textStart"
+        app:iconTint="@color/cipher_on_primary" />
 
-    <ScrollView
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_network"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/cipher_primary"
+        app:trackColor="@color/cipher_surface_high"
+        app:trackCornerRadius="4dp" />
+
+    <TextView
+        android:id="@+id/tv_network_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:accessibilityLiveRegion="polite"
+        android:text="@string/network_scanning_status"
+        android:textColor="@color/cipher_primary"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tv_network_results"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:fontFamily="monospace"
-            android:lineSpacingExtra="4dp"
-            android:padding="12dp"
-            android:text="Press SCAN CURRENT NETWORK to analyse your WiFi connection..."
-            android:textColor="#1A1A2E"
-            android:textSize="14sp" />
+            android:layout_weight="1"
+            android:text="●  Secure"
+            android:textColor="@color/cipher_success"
+            android:textSize="12sp" />
 
-    </ScrollView>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="●  Review"
+            android:textColor="@color/cipher_warning"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="●  Threat"
+            android:textColor="@color/cipher_danger"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="@color/cipher_surface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/cipher_outline_soft"
+        app:strokeWidth="1dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/tv_network_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans"
+                android:lineSpacingExtra="5dp"
+                android:padding="@dimen/card_padding"
+                android:text="@string/network_waiting"
+                android:textColor="@color/cipher_text_secondary"
+                android:textIsSelectable="true"
+                android:textSize="14sp" />
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

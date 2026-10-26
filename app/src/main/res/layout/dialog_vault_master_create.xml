@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/dialog_content_inset"
+    android:paddingEnd="@dimen/dialog_content_inset">
+
+    <TextView
+        android:id="@+id/tvMasterCreateMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/card_spacing"
+        android:text="@string/vault_master_create_message"
+        android:textAppearance="@style/TextAppearance.CHIPHERLOCK.Body"
+        android:textSize="14sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilMasterPassword"
+        style="@style/Widget.CHIPHERLOCK.TextInputLayout.Dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="@string/master_password"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etMasterPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:inputType="textPassword"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilMasterConfirm"
+        style="@style/Widget.CHIPHERLOCK.TextInputLayout.Dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/card_spacing"
+        android:hint="@string/confirm_master_password"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etMasterConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:inputType="textPassword"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

@@ -34,7 +34,7 @@ object HelpDeskKnowledgeBase {
             title    = "How does the SMS scam scanner work?",
             keywords = listOf("scan", "scanner", "sms", "how", "work", "detect", "scam", "paano", "gumagana", "detection"),
             body     = """
-📱 HOW THE SMS SCANNER WORKS
+HOW THE SMS SCANNER WORKS
 ──────────────────────────────
 CHIPHERLOCK scans every incoming SMS using two layers:
 
@@ -46,9 +46,9 @@ CHIPHERLOCK scans every incoming SMS using two layers:
 
 FINAL SCORE
    The two scores are combined: 40% keyword + 60% AI.
-   • 0–39  → LOW RISK 🟢 (message goes to Inbox)
-   • 40–69 → MEDIUM RISK 🟠 (message goes to Scams tab)
-   • 70+   → HIGH RISK 🔴 (message goes to Scams tab or Q-Zone if Auto-QZ is ON)
+   • 0–39  → LOW RISK (message goes to Inbox)
+   • 40–69 → MEDIUM RISK (message goes to Scams tab)
+   • 70+   → HIGH RISK (message goes to Scams tab or Q-Zone if Auto-QZ is ON)
 
 The scanner runs in the background even when the app is closed.
             """.trimIndent()
@@ -60,7 +60,7 @@ The scanner runs in the background even when the app is closed.
             title    = "What is the Q-Zone?",
             keywords = listOf("qzone", "q-zone", "quarantine", "quarantined", "held", "locked", "blocked", "release", "kulungan"),
             body     = """
-🔒 WHAT IS THE Q-ZONE?
+WHAT IS THE Q-ZONE?
 ──────────────────────────────
 The Q-Zone (Quarantine Zone) is a holding area for HIGH-risk messages when Auto-Quarantine is turned ON.
 
@@ -88,14 +88,14 @@ Q-Zone is different from the Scams tab. Scams tab shows flagged messages you can
             title    = "How do I manage the Access List?",
             keywords = listOf("access list", "allow", "block", "whitelist", "blacklist", "trusted", "sender", "number", "manage", "add", "remove", "puti", "itim"),
             body     = """
-📋 MANAGING THE ACCESS LIST
+MANAGING THE ACCESS LIST
 ──────────────────────────────
 The Access List controls how CHIPHERLOCK treats specific senders.
 
-ALLOW LIST ✅
+ALLOW LIST
   Messages from allowed senders skip scanning entirely and go straight to your Inbox. Use this for senders you fully trust — family members, your employer, known contacts.
 
-BLOCK LIST 🚫
+BLOCK LIST
   Messages from blocked senders are silently dropped. They never appear anywhere in the app. Use this for persistent spam numbers.
 
 HOW TO ADD A SENDER
@@ -116,7 +116,7 @@ IMPORTANT: Adding to the Allow List does NOT mean CHIPHERLOCK ignores the messag
             title    = "What is the Banking tab?",
             keywords = listOf("banking", "bank", "bdo", "bpi", "gcash", "maya", "verified", "sender", "financial", "tab"),
             body     = """
-🏦 THE BANKING TAB
+THE BANKING TAB
 ──────────────────────────────
 The Banking tab shows messages only from verified Philippine financial institutions — banks, e-wallets, telcos, and couriers.
 
@@ -139,7 +139,7 @@ REMEMBER: Real banks NEVER ask for your OTP, PIN, or password via SMS. If a mess
             title    = "Why is a legitimate message being flagged as a scam?",
             keywords = listOf("false positive", "legitimate", "flagged", "wrong", "mistake", "not scam", "legit", "mali", "tama", "bakit"),
             body     = """
-⚠️ LEGITIMATE MESSAGE FLAGGED?
+LEGITIMATE MESSAGE FLAGGED?
 ──────────────────────────────
 Sometimes a real message can score MEDIUM or HIGH. Here's why and what to do:
 
@@ -166,7 +166,7 @@ WHY WE LEAN TOWARD CAUTION
             title    = "How does the Vault work?",
             keywords = listOf("vault", "password", "store", "save", "encrypted", "how", "paano", "safe", "secure", "manager"),
             body     = """
-🔐 HOW THE VAULT WORKS
+HOW THE VAULT WORKS
 ──────────────────────────────
 The CHIPHERLOCK Vault is an encrypted password manager stored entirely on your device. No data is sent to any server.
 
@@ -191,7 +191,7 @@ FIRST TIME SETUP
             title    = "I forgot my master password. What do I do?",
             keywords = listOf("forgot", "forget", "password", "lost", "reset", "recover", "nakalimutan", "hindi", "matandaan"),
             body     = """
-😟 FORGOT YOUR MASTER PASSWORD
+FORGOT YOUR MASTER PASSWORD
 ──────────────────────────────
 Unfortunately, there is NO way to recover or reset a lost master password. This is by design — if recovery were possible, it would be a security vulnerability.
 
@@ -218,7 +218,7 @@ PREVENTION FOR THE FUTURE
             title    = "What is the Decoy Vault?",
             keywords = listOf("decoy", "honey", "fake", "duress", "forced", "coercion", "canary", "trap", "dummy"),
             body     = """
-🍯 THE DECOY VAULT
+THE DECOY VAULT
 ──────────────────────────────
 The Decoy Vault is a hidden safety feature for situations where someone forces you to open your vault under duress.
 
@@ -244,25 +244,25 @@ NOTE: The decoy vault is an advanced safety net. In an emergency, always priorit
             title    = "How does the Network Scanner work?",
             keywords = listOf("network", "wifi", "scanner", "scan", "evil twin", "threat", "safe", "nearby", "wireless", "internet"),
             body     = """
-📶 HOW THE NETWORK SCANNER WORKS
+HOW THE NETWORK SCANNER WORKS
 ──────────────────────────────
 The Network Scanner checks all nearby WiFi networks for security threats.
 
 WHAT IT DETECTS
 
-  🔴 THREAT — Evil Twin Attack
+  THREAT — Evil Twin Attack
      Two or more access points share the same network name. One of them may be a fake hotspot set up by an attacker to intercept your traffic. Never connect to these.
 
-  🟡 CAUTION — Suspicious Name
+  CAUTION — Suspicious Name
      Network names containing words like "Free", "Public", "Guest", or "Open" are often unencrypted and monitored. Avoid logging into banking or email on these.
 
-  🟡 CAUTION — Hidden SSID
+  CAUTION — Hidden SSID
      The network does not broadcast its name. Verify with the location staff before connecting.
 
-  🟡 CAUTION — Weak Signal Anomaly
+  CAUTION — Weak Signal Anomaly
      Very weak signal from a distant access point can indicate a spoofed or rogue AP.
 
-  🟢 SAFE
+  SAFE
      No threats detected. Still use common sense — always prefer your mobile data for sensitive transactions.
 
 HOW TO USE
@@ -278,7 +278,7 @@ HOW TO USE
             title    = "What does my Security Score mean?",
             keywords = listOf("score", "report", "security", "rating", "overall", "percentage", "meaning", "ibig sabihin", "marka"),
             body     = """
-📊 YOUR SECURITY SCORE
+YOUR SECURITY SCORE
 ──────────────────────────────
 Your Security Score (0–100) reflects your overall digital security posture. It is calculated from three factors:
 
@@ -315,7 +315,7 @@ HOW TO IMPROVE
             title    = "What is the Remote Lock and Wipe?",
             keywords = listOf("remote", "lock", "wipe", "lost", "stolen", "phone", "nawala", "ninakaw", "kill", "switch", "erase"),
             body     = """
-🚨 REMOTE LOCK AND WIPE
+REMOTE LOCK AND WIPE
 ──────────────────────────────
 If your phone is lost or stolen, the Report tab gives you two emergency controls:
 
@@ -342,18 +342,18 @@ IMPORTANT: Always confirm your identity before using these controls. Both action
             title    = "How do I spot a GCash or bank scam?",
             keywords = listOf("gcash", "bank", "scam", "spot", "identify", "fake", "otp", "transfer", "huwag", "magpadala", "beware"),
             body     = """
-💳 SPOTTING GCASH AND BANK SCAMS
+SPOTTING GCASH AND BANK SCAMS
 ──────────────────────────────
 These are the most common financial scams in the Philippines. Know the signs:
 
-RED FLAGS 🔴
+RED FLAGS
   • Any SMS asking for your OTP, PIN, or password — REAL banks and GCash NEVER ask for this
   • A link in the message (e.g. gcash-secure.online, bdo-verify.xyz) — REAL apps never need you to click a link to verify
   • Urgent language: "Your account will be locked in 24 hours", "Act now"
   • Promises of prizes, cashback, or refunds you never applied for
   • A sender phone number claiming to be a bank (real bank SMS comes from alphanumeric short codes)
 
-SAFE PATTERNS ✅
+SAFE PATTERNS
   Real GCash: "You received PHP 500.00 from 09**5****23. Ref: 1234567. Available balance: PHP 1,500.00" — no link, no request
   Real BDO: "Your BDO acct ending 1234 was debited PHP 2,500.00 on May 16. Not you? Call 889-10000" — callback number, no link
 
@@ -371,24 +371,24 @@ WHAT TO DO IF YOU RECEIVE A SUSPICIOUS MESSAGE
             title    = "What are common scam types in the Philippines?",
             keywords = listOf("types", "kinds", "list", "common", "scam", "philippines", "pilipinas", "lagay", "uri", "phishing", "vishing", "smishing"),
             body     = """
-🇵🇭 COMMON SCAM TYPES IN THE PHILIPPINES
+COMMON SCAM TYPES IN THE PHILIPPINES
 ──────────────────────────────
 CHIPHERLOCK detects all of these:
 
-💳 Financial Fraud — Fake GCash/Maya/bank alerts asking for OTP or login
-🔗 Phishing Link — Fake website links disguised as real bank/government sites
-🏛️ Gov't Impersonation — Fake SSS, PhilHealth, DSWD cash aid, NBI summons
-🎰 Prize/Lottery — "You won! Claim your prize at this link"
-💼 Job/Task Scam — "Work from home, earn PHP 5,000/day liking posts"
-📦 Parcel/Delivery — "Your package is held, pay redelivery fee here"
-💑 Romance Scam — Stranger builds relationship then asks for money
-🆘 Fake Emergency — "Nandito na ako sa ospital/presinto, send GCash"
-💔 Sextortion — Threats to release intimate photos unless paid
-🔪 Extortion/Kidnap — "Hawak namin ang pamilya mo, magbayad ka"
-💰 Loan Scam — "Fast approval, no collateral, apply now"
-💱 Crypto/Pig Butchering — Fake investment group with "guaranteed returns"
-🛒 Marketplace Scam — Fake Shopee/Lazada sellers, bogus escrow
-📲 SIM Swap — Asking you to confirm details "for SIM registration"
+Financial Fraud — Fake GCash/Maya/bank alerts asking for OTP or login
+Phishing Link — Fake website links disguised as real bank/government sites
+Gov't Impersonation — Fake SSS, PhilHealth, DSWD cash aid, NBI summons
+Prize/Lottery — "You won! Claim your prize at this link"
+Job/Task Scam — "Work from home, earn PHP 5,000/day liking posts"
+Parcel/Delivery — "Your package is held, pay redelivery fee here"
+Romance Scam — Stranger builds relationship then asks for money
+Fake Emergency — "Nandito na ako sa ospital/presinto, send GCash"
+Sextortion — Threats to release intimate photos unless paid
+Extortion/Kidnap — "Hawak namin ang pamilya mo, magbayad ka"
+Loan Scam — "Fast approval, no collateral, apply now"
+Crypto/Pig Butchering — Fake investment group with "guaranteed returns"
+Marketplace Scam — Fake Shopee/Lazada sellers, bogus escrow
+SIM Swap — Asking you to confirm details "for SIM registration"
 
 If you receive any of these, report the sender and do not engage.
             """.trimIndent()
@@ -400,23 +400,23 @@ If you receive any of these, report the sender and do not engage.
             title    = "How do I create a strong password?",
             keywords = listOf("strong", "password", "create", "generate", "tips", "good", "gumawa", "password", "matibay", "secure"),
             body     = """
-🔑 CREATING A STRONG PASSWORD
+CREATING A STRONG PASSWORD
 ──────────────────────────────
 CHIPHERLOCK can generate strong passwords for you automatically — tap the + button in the Vault and use the Generate option.
 
 IF YOU WANT TO CREATE ONE YOURSELF:
 
 GOOD PASSWORD RULES
-  ✅ At least 12 characters (16+ is better)
-  ✅ Mix of uppercase, lowercase, numbers, and symbols
-  ✅ No personal info (birthdate, name, phone number)
-  ✅ No dictionary words (even with letter substitutions like p@ssw0rd — these are cracked easily)
-  ✅ Different password for every account
+  At least 12 characters (16+ is better)
+  Mix of uppercase, lowercase, numbers, and symbols
+  No personal info (birthdate, name, phone number)
+  No dictionary words (even with letter substitutions like p@ssw0rd — these are cracked easily)
+  Different password for every account
 
-EXAMPLES OF WEAK PASSWORDS ❌
+EXAMPLES OF WEAK PASSWORDS
   password123, iloveyou, 123456, abc123, juan2024, manila2024!
 
-EXAMPLES OF STRONG PASSWORDS ✅
+EXAMPLES OF STRONG PASSWORDS
   Kf#9mQpL2!xR (random, 12 chars)
   correct-horse-battery-staple (passphrase, long)
 
@@ -431,7 +431,7 @@ REMEMBERING PASSWORDS
             title    = "Is it safe to use public WiFi?",
             keywords = listOf("public wifi", "wifi", "safe", "danger", "coffee shop", "mall", "library", "open network", "ligtas", "delikado"),
             body     = """
-📡 PUBLIC WIFI SAFETY
+PUBLIC WIFI SAFETY
 ──────────────────────────────
 Public WiFi is convenient but risky. Here is how to stay safe:
 
@@ -443,12 +443,12 @@ WHAT THE RISKS ARE
 CHIPHERLOCK'S NETWORK SCANNER helps you detect evil twin attacks before you connect.
 
 RULES FOR PUBLIC WIFI
-  ✅ Use mobile data (LTE/5G) for banking, GCash, and email
-  ✅ If you must use public WiFi, connect through a VPN
-  ✅ Verify the network name with staff before connecting (e.g. "SM Free WiFi" vs "SM_FreeWiFi")
-  ✅ Log out of accounts when done on a shared connection
-  ❌ Never type passwords on public WiFi without a VPN
-  ❌ Never connect to unnamed or hidden networks you don't recognise
+  Use mobile data (LTE/5G) for banking, GCash, and email
+  If you must use public WiFi, connect through a VPN
+  Verify the network name with staff before connecting (e.g. "SM Free WiFi" vs "SM_FreeWiFi")
+  Log out of accounts when done on a shared connection
+  Never type passwords on public WiFi without a VPN
+  Never connect to unnamed or hidden networks you don't recognise
             """.trimIndent()
         ),
 
@@ -460,7 +460,7 @@ RULES FOR PUBLIC WIFI
             title    = "How do I set CHIPHERLOCK as my default SMS app?",
             keywords = listOf("default", "sms", "app", "set", "how", "itakda", "pangunahin", "messaging", "receive"),
             body     = """
-📲 SETTING CHIPHERLOCK AS DEFAULT SMS APP
+SETTING CHIPHERLOCK AS DEFAULT SMS APP
 ──────────────────────────────
 To get full scanning capability — including the ability to intercept and quarantine HIGH-risk messages — CHIPHERLOCK needs to be your default SMS app.
 
@@ -493,7 +493,7 @@ NOTE: If CHIPHERLOCK is NOT the default app, it still monitors SMS in the backgr
             title    = "How do I enable the Autofill service?",
             keywords = listOf("autofill", "fill", "automatic", "login", "enable", "setup", "i-setup", "password fill", "credentials"),
             body     = """
-🔑 ENABLING CHIPHERLOCK AUTOFILL
+ENABLING CHIPHERLOCK AUTOFILL
 ──────────────────────────────
 CHIPHERLOCK can automatically fill your saved passwords into other apps (GCash, BDO, Shopee, Facebook, etc.).
 

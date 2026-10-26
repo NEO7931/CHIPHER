@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         val rootBeer = com.scottyab.rootbeer.RootBeer(this)
         if (rootBeer.isRooted) {
             android.app.AlertDialog.Builder(this)
-                .setTitle("⚠️ Security Warning")
+                .setTitle("Security Warning")
                 .setMessage(
                     "This device appears to be rooted or tampered with.\n\n" +
                             "Rooted devices have reduced security guarantees. " +
@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity() {
         val scroll = android.widget.ScrollView(this).apply { addView(tv) }
 
         android.app.AlertDialog.Builder(this)
-            .setTitle("🛠️  Previous crash log")
+            .setTitle("Previous crash log")
             .setView(scroll)
             .setPositiveButton("Dismiss") { d, _ -> d.dismiss() }
             .setNegativeButton("Clear log") { _, _ -> crashFile.delete() }
@@ -217,19 +217,19 @@ class MainActivity : AppCompatActivity() {
         suspSender: Boolean
     ): String {
         val riskLabel = when {
-            score >= 70 -> "🔴 HIGH RISK ($score/100)"
-            score >= 40 -> "🟠 MEDIUM RISK ($score/100)"
-            else        -> "🟡 LOW RISK ($score/100)"
+            score >= 70 -> "HIGH RISK ($score/100)"
+            score >= 40 -> "MEDIUM RISK ($score/100)"
+            else        -> "LOW RISK ($score/100)"
         }
         val sb = StringBuilder()
-        sb.append("🚨 ALERT FROM NOTIFICATION\n\n")
-        sb.append("⚠️ [$category]\n")
+        sb.append("ALERT FROM NOTIFICATION\n\n")
+        sb.append("[$category]\n")
         sb.append("$riskLabel\n")
         sb.append("From: $sender\n")
         if (keywords.isNotEmpty()) sb.append("Keywords: $keywords\n")
         if (phFlags.isNotEmpty())  sb.append("PH Flags: $phFlags\n")
-        if (hasUrl)                sb.append("⚠️ Suspicious URL detected\n")
-        if (suspSender)            sb.append("⚠️ Suspicious sender number\n")
+        if (hasUrl)                sb.append("Suspicious URL detected\n")
+        if (suspSender)            sb.append("Suspicious sender number\n")
         sb.append("─────────────────────\n")
         sb.append("Message:\n\"$body\"")
         return sb.toString()
@@ -263,148 +263,100 @@ class MainActivity : AppCompatActivity() {
     }
     private fun showEnrollmentDialog(onSuccess: () -> Unit) {
         val ctx = this
-        val d   = resources.displayMetrics.density
-        fun dp(v: Int) = (v * d).toInt()
+        val content = layoutInflater.inflate(R.layout.dialog_vault_master_create, null)
+        val etPw = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterPassword)
+        val etCon = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterConfirm)
 
-        val container = android.widget.LinearLayout(ctx).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding(dp(20), dp(16), dp(20), dp(8))
-        }
-
-        container.addView(android.widget.TextView(ctx).apply {
-            text = "Choose a master password. You will need this to recover your vault if you " +
-                    "lose your phone or change devices. It cannot be reset."
-            textSize = 13f
-            setTextColor(android.graphics.Color.parseColor("#424242"))
-            layoutParams = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(16) }
-        })
-
-        fun makeField(hint: String): android.widget.EditText {
-            val label = android.widget.TextView(ctx).apply {
-                text = hint; textSize = 12f
-                setTextColor(android.graphics.Color.parseColor("#757575"))
-            }
-            val field = android.widget.EditText(ctx).apply {
-                this.hint = hint
-                inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                        android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-                typeface = android.graphics.Typeface.MONOSPACE
-                layoutParams = android.widget.LinearLayout.LayoutParams(
-                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = dp(12) }
-            }
-            container.addView(label)
-            container.addView(field)
-            return field
-        }
-
-        val etPw  = makeField("Master password")
-        val etCon = makeField("Confirm master password")
-
-        androidx.appcompat.app.AlertDialog.Builder(ctx)
-            .setTitle("🔐 Create vault")
-            .setView(android.widget.ScrollView(ctx).also { it.addView(container) })
+        val dialog = VaultDialogUi.builder(ctx)
+            .setTitle(R.string.vault_master_create_title)
+            .setView(content)
             .setPositiveButton("Create", null)
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(android.R.string.cancel, null)
             .create()
-            .also { dialog ->
-                dialog.show()
-                dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                    .setOnClickListener {
-                        val pw1 = etPw.text.toString()
-                        val pw2 = etCon.text.toString()
-                        if (pw1.length < 8) {
-                            android.widget.Toast.makeText(ctx,
-                                "Password must be at least 8 characters",
-                                android.widget.Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-                        if (pw1 != pw2) {
-                            android.widget.Toast.makeText(ctx,
-                                "Passwords do not match",
-                                android.widget.Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-                        val pwChars = pw1.toCharArray()
-                        etPw.text.clear(); etCon.text.clear()
 
-                        val btn = dialog.getButton(
-                            androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                        btn.isEnabled = false
+        VaultDialogUi.showStyled(dialog)
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+            .setOnClickListener {
+                val pw1 = etPw.text?.toString().orEmpty()
+                val pw2 = etCon.text?.toString().orEmpty()
+                if (pw1.length < 8) {
+                    android.widget.Toast.makeText(ctx,
+                        "Password must be at least 8 characters",
+                        android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (pw1 != pw2) {
+                    android.widget.Toast.makeText(ctx,
+                        "Passwords do not match",
+                        android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val pwChars = pw1.toCharArray()
+                etPw.text?.clear()
+                etCon.text?.clear()
 
-                        Thread {
-                            try {
-                                VaultKeyManager.enroll(pwChars, ctx)
-                                runOnUiThread {
-                                    dialog.dismiss()
-                                    binding.bottomNavigation.selectedItemId = R.id.nav_vault
-                                    onSuccess()
-                                }
-                            } catch (e: Exception) {
-                                runOnUiThread {
-                                    btn.isEnabled = true
-                                    android.widget.Toast.makeText(ctx,
-                                        "Setup failed: ${e.message}",
-                                        android.widget.Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        }.start()
+                val btn = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                btn.isEnabled = false
+
+                Thread {
+                    try {
+                        VaultKeyManager.enroll(pwChars, ctx)
+                        runOnUiThread {
+                            dialog.dismiss()
+                            binding.bottomNavigation.selectedItemId = R.id.nav_vault
+                            onSuccess()
+                        }
+                    } catch (e: Exception) {
+                        runOnUiThread {
+                            btn.isEnabled = true
+                            android.widget.Toast.makeText(ctx,
+                                "Setup failed: ${e.message}",
+                                android.widget.Toast.LENGTH_LONG).show()
+                        }
                     }
+                }.start()
             }
     }
+
     private fun showPasswordUnlockDialog(onSuccess: () -> Unit) {
         val ctx = this
-        val d   = resources.displayMetrics.density
-        fun dp(v: Int) = (v * d).toInt()
+        val content = layoutInflater.inflate(R.layout.dialog_vault_master_unlock, null)
+        val etPw = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterUnlock)
 
-        val etPw = android.widget.EditText(ctx).apply {
-            hint = "Master password"
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                    android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-            typeface = android.graphics.Typeface.MONOSPACE
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-        }
-
-        androidx.appcompat.app.AlertDialog.Builder(ctx)
-            .setTitle("🔑 Enter master password")
-            .setView(etPw)
+        val dialog = VaultDialogUi.builder(ctx)
+            .setTitle(R.string.vault_master_unlock_title)
+            .setView(content)
             .setPositiveButton("Unlock", null)
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(android.R.string.cancel, null)
             .create()
-            .also { dialog ->
-                dialog.show()
-                dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                    .setOnClickListener {
-                        val pwChars = etPw.text.toString().toCharArray()
-                        etPw.text.clear()
 
-                        val btn = dialog.getButton(
-                            androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                        btn.isEnabled = false
+        VaultDialogUi.showStyled(dialog)
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+            .setOnClickListener {
+                val pwChars = etPw.text?.toString()?.toCharArray() ?: charArrayOf()
+                etPw.text?.clear()
 
-                        Thread {
-                            val ok = VaultKeyManager.unlockWithPassword(pwChars, ctx)
-                            runOnUiThread {
-                                if (ok) {
-                                    VaultAuthManager.markUnlocked()
-                                    LockoutCounter.reset(ctx)
-                                    dialog.dismiss()
-                                    binding.bottomNavigation.selectedItemId = R.id.nav_vault
-                                    onSuccess()
-                                } else {
-                                    btn.isEnabled = true
-                                    LockoutCounter.recordFailure(ctx)
-                                    android.widget.Toast.makeText(ctx,
-                                        "Wrong password.",
-                                        android.widget.Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }.start()
+                val btn = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                btn.isEnabled = false
+
+                Thread {
+                    val ok = VaultKeyManager.unlockWithPassword(pwChars, ctx)
+                    runOnUiThread {
+                        if (ok) {
+                            VaultAuthManager.markUnlocked()
+                            LockoutCounter.reset(ctx)
+                            dialog.dismiss()
+                            binding.bottomNavigation.selectedItemId = R.id.nav_vault
+                            onSuccess()
+                        } else {
+                            btn.isEnabled = true
+                            LockoutCounter.recordFailure(ctx)
+                            android.widget.Toast.makeText(ctx,
+                                "Wrong password.",
+                                android.widget.Toast.LENGTH_SHORT).show()
+                        }
                     }
+                }.start()
             }
     }
 

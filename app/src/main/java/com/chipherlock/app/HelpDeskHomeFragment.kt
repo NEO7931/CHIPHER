@@ -46,46 +46,35 @@ class HelpDeskHomeFragment : Fragment() {
         val ctx = requireContext()
         val density = ctx.resources.displayMetrics.density
         dp = { v -> (v * density).toInt() }
-        return buildUI(ctx)
+        val view = inflater.inflate(R.layout.fragment_help_desk_home, container, false)
+        buildUI(ctx, view.findViewById(R.id.helpHomeContent))
+        return view
     }
 
     // ════════════════════════════════════════════════════════════════════════
     // ROOT UI
     // ════════════════════════════════════════════════════════════════════════
 
-    private fun buildUI(ctx: Context): View {
-        val scroll = ScrollView(ctx).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-
-        val root = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), dp(12), dp(12), dp(80))
-        }
-        scroll.addView(root)
-
+    private fun buildUI(ctx: Context, root: LinearLayout) {
         // ── Section 1: How to Use CHIPHERLOCK ───────────────────────────────
-        root.addView(buildSectionHeader(ctx, "📱 How to Use CHIPHERLOCK",
+        root.addView(buildSectionHeader(ctx, "How to Use CHIPHERLOCK",
             "Most common questions from new users"))
 
         howToUseItems.forEach { item ->
             root.addView(buildCollapsibleCard(ctx, item.question, item.answer,
-                accentColor = 0xFF1565C0.toInt()))
+                accentColor = CipherPalette.primary))
         }
 
         // ── Divider ──────────────────────────────────────────────────────────
         root.addView(View(ctx).apply {
-            setBackgroundColor(0xFFE0E0E0.toInt())
+            setBackgroundColor(CipherPalette.outlineSoft)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, dp(1)
             ).apply { topMargin = dp(20); bottomMargin = dp(8) }
         })
 
         // ── Section 2: Know Your Threats ─────────────────────────────────────
-        root.addView(buildSectionHeader(ctx, "⚠️ Know Your Threats",
+        root.addView(buildSectionHeader(ctx, "Know Your Threats",
             "Common Android attacks targeting Filipinos — with real sources"))
 
         // Notice about sources
@@ -93,7 +82,7 @@ class HelpDeskHomeFragment : Fragment() {
             text = "All threat data below is sourced from open, verified security research. " +
                     "Tap the source link on any card to read the original report."
             textSize = 12f
-            setTextColor(0xFF616161.toInt())
+            setTextColor(CipherPalette.textSecondary)
             setPadding(dp(4), 0, dp(4), dp(8))
         })
 
@@ -101,7 +90,6 @@ class HelpDeskHomeFragment : Fragment() {
             root.addView(buildThreatCard(ctx, item))
         }
 
-        return scroll
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -117,12 +105,12 @@ class HelpDeskHomeFragment : Fragment() {
                 text     = title
                 textSize = 18f
                 typeface = android.graphics.Typeface.DEFAULT_BOLD
-                setTextColor(0xFF0D47A1.toInt())
+                setTextColor(CipherPalette.primary)
             })
             addView(TextView(ctx).apply {
                 text     = subtitle
                 textSize = 12f
-                setTextColor(0xFF757575.toInt())
+                setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -143,7 +131,7 @@ class HelpDeskHomeFragment : Fragment() {
     ): View {
         val card = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(0xFFFFFFFF.toInt())
+            setBackgroundColor(CipherPalette.surface)
             elevation     = dp(2).toFloat()
             layoutParams  = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -179,14 +167,14 @@ class HelpDeskHomeFragment : Fragment() {
             text     = question
             textSize = 14f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(0xFF212121.toInt())
+            setTextColor(CipherPalette.textPrimary)
             layoutParams = LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         val tvChevron = TextView(ctx).apply {
             text     = "▼"
             textSize = 12f
-            setTextColor(0xFF9E9E9E.toInt())
+            setTextColor(CipherPalette.textMuted)
             setPadding(dp(8), 0, 0, 0)
         }
         questionRow.addView(tvQ)
@@ -196,7 +184,7 @@ class HelpDeskHomeFragment : Fragment() {
         val tvA = TextView(ctx).apply {
             text       = answer
             textSize   = 13f
-            setTextColor(0xFF424242.toInt())
+            setTextColor(CipherPalette.textSecondary)
             visibility = View.GONE
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -224,7 +212,7 @@ class HelpDeskHomeFragment : Fragment() {
     private fun buildThreatCard(ctx: Context, item: ThreatItem): View {
         val card = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(0xFFFFFFFF.toInt())
+            setBackgroundColor(CipherPalette.surface)
             elevation    = dp(2).toFloat()
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -236,10 +224,10 @@ class HelpDeskHomeFragment : Fragment() {
 
         // Severity color bar
         val barColor = when (item.severity) {
-            Severity.CRITICAL -> 0xFFB71C1C.toInt()
-            Severity.HIGH     -> 0xFFE53935.toInt()
-            Severity.MEDIUM   -> 0xFFF57C00.toInt()
-            Severity.LOW      -> 0xFF388E3C.toInt()
+            Severity.CRITICAL -> CipherPalette.danger
+            Severity.HIGH     -> CipherPalette.danger
+            Severity.MEDIUM   -> CipherPalette.warning
+            Severity.LOW      -> CipherPalette.success
         }
         row.addView(View(ctx).apply {
             setBackgroundColor(barColor)
@@ -260,17 +248,17 @@ class HelpDeskHomeFragment : Fragment() {
             gravity     = Gravity.CENTER_VERTICAL
         }
         titleRow.addView(TextView(ctx).apply {
-            text     = item.emoji + "  " + item.name
+            text     = item.name
             textSize = 15f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(0xFF212121.toInt())
+            setTextColor(CipherPalette.textPrimary)
             layoutParams = LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         titleRow.addView(TextView(ctx).apply {
             text     = item.severity.label
             textSize = 10f
-            setTextColor(0xFFFFFFFF.toInt())
+            setTextColor(CipherPalette.textPrimary)
             setBackgroundColor(barColor)
             setPadding(dp(6), dp(3), dp(6), dp(3))
             typeface = android.graphics.Typeface.DEFAULT_BOLD
@@ -281,7 +269,7 @@ class HelpDeskHomeFragment : Fragment() {
         col.addView(TextView(ctx).apply {
             text     = item.whatItIs
             textSize = 13f
-            setTextColor(0xFF424242.toInt())
+            setTextColor(CipherPalette.textSecondary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -291,7 +279,7 @@ class HelpDeskHomeFragment : Fragment() {
         // Philippine context box
         col.addView(LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(0xFFFFF8E1.toInt())
+            setBackgroundColor(CipherPalette.warningContainer)
             setPadding(dp(10), dp(8), dp(10), dp(8))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -299,15 +287,15 @@ class HelpDeskHomeFragment : Fragment() {
             ).apply { topMargin = dp(8) }
 
             addView(TextView(ctx).apply {
-                text     = "🇵🇭  In the Philippines:"
+                text     = "In the Philippines:"
                 textSize = 11f
                 typeface = android.graphics.Typeface.DEFAULT_BOLD
-                setTextColor(0xFFE65100.toInt())
+                setTextColor(CipherPalette.warning)
             })
             addView(TextView(ctx).apply {
                 text     = item.phContext
                 textSize = 12f
-                setTextColor(0xFF5D4037.toInt())
+                setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -317,9 +305,9 @@ class HelpDeskHomeFragment : Fragment() {
 
         // What to do
         col.addView(TextView(ctx).apply {
-            text     = "✅  What to do: ${item.whatToDo}"
+            text     = "What to do: ${item.whatToDo}"
             textSize = 12f
-            setTextColor(0xFF1B5E20.toInt())
+            setTextColor(CipherPalette.success)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -328,9 +316,9 @@ class HelpDeskHomeFragment : Fragment() {
 
         // Source citation — tappable
         col.addView(TextView(ctx).apply {
-            text     = "📄  Source: ${item.sourceName}"
+            text     = "Source: ${item.sourceName}"
             textSize = 11f
-            setTextColor(0xFF1565C0.toInt())
+            setTextColor(CipherPalette.primary)
             setPadding(0, dp(8), 0, 0)
             setOnClickListener {
                 runCatching {
@@ -360,9 +348,9 @@ class HelpDeskHomeFragment : Fragment() {
         FaqItem(
             "How do I read my SMS scan results?",
             "Every message gets a risk score from 0–100:\n\n" +
-                    "🟢 LOW (0–39) → Goes to your Inbox. Likely safe.\n" +
-                    "🟠 MEDIUM (40–69) → Goes to Scams tab. Read with caution.\n" +
-                    "🔴 HIGH (70–100) → Goes to Scams tab or Q-Zone if Auto-QZ is ON.\n\n" +
+                    "LOW (0–39) → Goes to your Inbox. Likely safe.\n" +
+                    "MEDIUM (40–69) → Goes to Scams tab. Read with caution.\n" +
+                    "HIGH (70–100) → Goes to Scams tab or Q-Zone if Auto-QZ is ON.\n\n" +
                     "Tap any message to see the full score breakdown  it shows exactly which words or patterns triggered the flag."
         ),
         FaqItem(
@@ -382,7 +370,7 @@ class HelpDeskHomeFragment : Fragment() {
         ),
         FaqItem(
             "How do I save a password to the Vault?",
-            "Tap the Vault tab (🔒) → tap the + button → fill in the app/website name, username, and password.\n\n" +
+            "Tap the Vault tab () → tap the + button → fill in the app/website name, username, and password.\n\n" +
                     "Or let CHIPHERLOCK generate one for you  tap Generate inside the password field.\n\n" +
                     "First time? You'll be asked to create a master password. Choose something strong  it cannot be reset if forgotten."
         ),
@@ -394,11 +382,11 @@ class HelpDeskHomeFragment : Fragment() {
         ),
         FaqItem(
             "How do I scan nearby WiFi networks?",
-            "Tap the Network tab (📶) → tap 'SCAN NEARBY NETWORKS'.\n\n" +
+            "Tap the Network tab () → tap 'SCAN NEARBY NETWORKS'.\n\n" +
                     "Results appear with colour codes:\n" +
-                    "🔴 THREAT  possible evil twin attack (two networks same name)\n" +
-                    "🟡 CAUTION  suspicious name, hidden SSID, or weak signal anomaly\n" +
-                    "🟢 SAFE  no threats detected\n\n" +
+                    "THREAT  possible evil twin attack (two networks same name)\n" +
+                    "CAUTION  suspicious name, hidden SSID, or weak signal anomaly\n" +
+                    "SAFE  no threats detected\n\n" +
                     "Even on a SAFE network, use mobile data for banking transactions."
         ),
         FaqItem(
@@ -438,7 +426,6 @@ class HelpDeskHomeFragment : Fragment() {
     }
 
     data class ThreatItem(
-        val emoji:       String,
         val name:        String,
         val severity:    Severity,
         val whatItIs:    String,
@@ -451,7 +438,6 @@ class HelpDeskHomeFragment : Fragment() {
     private val threatItems = listOf(
 
         ThreatItem(
-            emoji    = "📩",
             name     = "Smishing (SMS Phishing)",
             severity = Severity.CRITICAL,
             whatItIs = "Scammers send fake text messages pretending to be your bank, GCash, the SSS, LTO, or a courier. The goal is to trick you into clicking a link or sharing your OTP.",
@@ -462,7 +448,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "🏦",
             name     = "Banking Trojans",
             severity = Severity.CRITICAL,
             whatItIs = "Malware disguised as a normal app (like a fake update, game, or tracking app) that secretly steals your banking login and GCash credentials in the background.",
@@ -473,7 +458,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "📶",
             name     = "Evil Twin WiFi Attack",
             severity = Severity.HIGH,
             whatItIs = "An attacker sets up a fake WiFi hotspot with the same name as a real network (e.g. 'SM Free WiFi'). When you connect, they can see everything you send  including login credentials.",
@@ -484,7 +468,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "🔁",
             name     = "SIM Swap Attack",
             severity = Severity.HIGH,
             whatItIs = "A criminal calls your telco (Globe, Smart, DITO) pretending to be you, and convinces them to transfer your phone number to a SIM card the criminal owns. They then receive all your OTPs  and can access your GCash, bank, and email accounts.",
@@ -495,7 +478,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "📦",
             name     = "Fake App / Trojan Dropper",
             severity = Severity.HIGH,
             whatItIs = "An app that looks legitimate but secretly installs additional malware in the background. Common disguises: fake system updates, fake tracking apps, modified versions of popular apps (like a fake WhatsApp or GCash).",
@@ -506,7 +488,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "🎣",
             name     = "Vishing (Voice Phishing)",
             severity = Severity.HIGH,
             whatItIs = "A scammer calls you on the phone pretending to be from BDO, BPI, GCash, the NBI, or even the PNP. They create urgency ('your account will be locked', 'you have a warrant') to trick you into giving your OTP, password, or personal information.",
@@ -517,7 +498,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "📷",
             name     = "QR Code Phishing (Quishing)",
             severity = Severity.MEDIUM,
             whatItIs = "A fake QR code that looks official (on a parking meter, restaurant table, or event poster) but leads to a phishing website that steals your credentials or installs malware.",
@@ -528,7 +508,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "💰",
             name     = "Investment Scam Apps (Pig Butchering)",
             severity = Severity.HIGH,
             whatItIs = "Fake investment or trading apps that show you fake profits to gain your trust, then ask for larger deposits  before disappearing with your money. Often starts as a romance or friendship built over weeks on social media.",
@@ -539,7 +518,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "🔑",
             name     = "Credential Stuffing",
             severity = Severity.MEDIUM,
             whatItIs = "Criminals take usernames and passwords stolen from one data breach (e.g. a leaked Shopee or Facebook breach) and automatically try them on other services  GCash, BDO, email. If you reuse passwords, one breach unlocks everything.",
@@ -550,7 +528,6 @@ class HelpDeskHomeFragment : Fragment() {
         ),
 
         ThreatItem(
-            emoji    = "🤖",
             name     = "AI-Powered Phishing",
             severity = Severity.HIGH,
             whatItIs = "Scammers now use AI to craft phishing messages that sound perfectly natural, are free of spelling errors, and are personalized to the victim. AI-generated phishing is 4.5x more effective than traditional phishing at tricking people into clicking.",

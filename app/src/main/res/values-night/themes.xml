@@ -1,7 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CHIPHERLOCK" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Base.Theme.CHIPHERLOCK" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/cipher_primary</item>
+        <item name="colorOnPrimary">@color/cipher_on_primary</item>
+        <item name="colorPrimaryContainer">@color/cipher_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/cipher_text_primary</item>
+        <item name="colorSecondary">@color/cipher_info</item>
+        <item name="colorError">@color/cipher_danger</item>
+        <item name="colorSurface">@color/cipher_surface</item>
+        <item name="colorSurfaceVariant">@color/cipher_surface_high</item>
+        <item name="colorOnSurface">@color/cipher_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/cipher_text_secondary</item>
+        <item name="colorOutline">@color/cipher_outline</item>
+        <item name="android:colorAccent">@color/cipher_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:statusBarColor">@color/cipher_background</item>
+        <item name="android:navigationBarColor">@color/cipher_surface</item>
+        <item name="android:windowBackground">@color/cipher_background</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.CHIPHERLOCK.Dialog</item>
     </style>
 </resources>

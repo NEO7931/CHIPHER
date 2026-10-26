@@ -1,3 +1,12 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="screen_padding">18dp</dimen>
+    <dimen name="section_spacing">20dp</dimen>
+    <dimen name="card_spacing">12dp</dimen>
+    <dimen name="card_padding">18dp</dimen>
+    <dimen name="card_radius">20dp</dimen>
+    <dimen name="touch_target">48dp</dimen>
+    <dimen name="bottom_nav_height">72dp</dimen>
+    <dimen name="content_max_width">720dp</dimen>
+    <dimen name="dialog_content_inset">24dp</dimen>
 </resources>

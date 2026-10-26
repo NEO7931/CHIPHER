@@ -328,7 +328,7 @@ class SmsFragment : Fragment() {
             VerifiedSenders.isVerified(s) && isAlphanumeric
         }
 
-        tvBankingCount.text = "🏦 Banking — ${bankingMessages.size} messages"
+        tvBankingCount.text = "Banking — ${bankingMessages.size} messages"
 
         if (bankingMessages.isEmpty()) {
             tvBankingPlaceholder.visibility = View.VISIBLE
@@ -361,16 +361,16 @@ class SmsFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             })
             headerRow.addView(TextView(ctx).apply {
-                text = "  ✅ Verified  "; textSize = 11f
+                text = "  Verified  "; textSize = 11f
                 setTextColor(Color.WHITE)
                 background = android.graphics.drawable.GradientDrawable().also {
-                    it.setColor(Color.parseColor("#1565C0")); it.cornerRadius = 12 * dp
+                    it.setColor(CipherPalette.info); it.cornerRadius = 12 * dp
                 }
             })
             row.addView(headerRow)
             row.addView(TextView(ctx).apply {
                 text = "${msgs.size} message${if (msgs.size != 1) "s" else ""}"
-                textSize = 12f; setTextColor(Color.GRAY)
+                textSize = 12f; setTextColor(CipherPalette.textMuted)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -378,7 +378,7 @@ class SmsFragment : Fragment() {
             })
             row.addView(TextView(ctx).apply {
                 text = latest.body.take(80); textSize = 13f
-                setTextColor(Color.parseColor("#555555"))
+                setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -422,7 +422,7 @@ class SmsFragment : Fragment() {
         updateDrawerHeader()
 
         val on = Color.WHITE
-        val off = Color.parseColor("#80FFFFFF")
+        val off = CipherPalette.textDisabled
         btnTabInbox.setTextColor(if (tab == "INBOX") on else off)
         btnTabScanner.setTextColor(if (tab == "SCANNER") on else off)
         btnTabQuarantine.setTextColor(if (tab == "QUARANTINE") on else off)
@@ -490,15 +490,14 @@ class SmsFragment : Fragment() {
 
     fun updateDrawerHeader() {
         val ctx = context ?: return
-        val (emoji, label) = when (currentCategory) {
-            SmsCategory.INBOX   -> "📥" to "Inbox"
-            SmsCategory.SCAMS   -> "⚠️" to "Scams"
-            SmsCategory.BANKING -> "🏦" to "Banking"
-            SmsCategory.QZONE   -> "🔒" to "Q-Zone"
-            SmsCategory.HISTORY -> "📋" to "History"
-            SmsCategory.SCANNER -> "🔍" to "Scanner"
+        tvDrawerActiveLabel.text = when (currentCategory) {
+            SmsCategory.INBOX   -> "Inbox"
+            SmsCategory.SCAMS   -> "Scams"
+            SmsCategory.BANKING -> "Banking"
+            SmsCategory.QZONE   -> "Q-Zone"
+            SmsCategory.HISTORY -> "History"
+            SmsCategory.SCANNER -> "Scanner"
         }
-        tvDrawerActiveLabel.text = "$emoji  $label"
 
         val activeCount = NotificationCounter.getCount(ctx, currentCategory)
         if (activeCount > 0) {
@@ -546,8 +545,8 @@ class SmsFragment : Fragment() {
     private fun loadBlacklistSection() {
         val ctx = context ?: return
         val dp = ctx.resources.displayMetrics.density
-        val red = Color.parseColor("#FF5252")
-        val dark = Color.parseColor("#B71C1C")
+        val red = CipherPalette.danger
+        val dark = CipherPalette.danger
         llBlacklistSection.removeAllViews()
 
         val list = loadBlacklist(ctx)
@@ -556,7 +555,7 @@ class SmsFragment : Fragment() {
         val header = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setBackgroundColor(Color.parseColor("#FFEBEE"))
+            setBackgroundColor(CipherPalette.dangerContainer)
             val p = m(10, dp)
             setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(
@@ -564,15 +563,15 @@ class SmsFragment : Fragment() {
             )
         }
         header.addView(TextView(ctx).apply {
-            text = "🔐  ACCESS LIST  —  🚫 ${list.size} blocked"
+            text = "ACCESS LIST  —  ${list.size} blocked"
             textSize = 13f
             setTypeface(null, Typeface.BOLD); setTextColor(dark)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(ctx).apply {
-            text = if (isViewingBlacklistLogs) "← INBOX" else "LOGS 📋"
+            text = if (isViewingBlacklistLogs) "← INBOX" else "LOGS"
             textSize = 11f; setTextColor(Color.WHITE)
-            backgroundTintList = ColorStateList.valueOf(Color.parseColor("#7B1FA2"))
+            backgroundTintList = ColorStateList.valueOf(CipherPalette.warning)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, m(36, dp)
             ).also { it.marginEnd = m(6, dp) }
@@ -602,7 +601,7 @@ class SmsFragment : Fragment() {
         // ── Body (visible when expanded) ──
         val body = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#FFF5F5"))
+            setBackgroundColor(CipherPalette.dangerContainer)
             val p = m(10, dp)
             setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(
@@ -644,7 +643,7 @@ class SmsFragment : Fragment() {
                     )
                 )
                 etInput.text.clear()
-                Toast.makeText(c, "🚫 \"$input\" is now blocked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(c, "\"$input\" is now blocked", Toast.LENGTH_SHORT).show()
                 loadBlacklistSection()
                 loadInbox()
             }
@@ -654,7 +653,7 @@ class SmsFragment : Fragment() {
         if (list.isEmpty()) {
             body.addView(TextView(ctx).apply {
                 text = "No senders blocked yet."
-                textSize = 12f; setTextColor(Color.GRAY)
+                textSize = 12f; setTextColor(CipherPalette.textMuted)
             })
         } else {
             list.forEach { entry ->
@@ -666,13 +665,13 @@ class SmsFragment : Fragment() {
                     ).also { it.bottomMargin = m(6, dp) }
                 }
                 row.addView(TextView(ctx).apply {
-                    text = "🚫  ${entry.sender}"
+                    text = "${entry.sender}"
                     textSize = 13f; setTypeface(null, Typeface.BOLD); setTextColor(dark)
                     layoutParams =
                         LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 })
                 row.addView(TextView(ctx).apply {
-                    text = entry.reason; textSize = 11f; setTextColor(Color.GRAY)
+                    text = entry.reason; textSize = 11f; setTextColor(CipherPalette.textMuted)
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -680,12 +679,12 @@ class SmsFragment : Fragment() {
                 })
                 row.addView(Button(ctx).apply {
                     text = "✕"; textSize = 11f; setTextColor(Color.WHITE)
-                    backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+                    backgroundTintList = ColorStateList.valueOf(CipherPalette.surfaceHigh)
                     layoutParams = LinearLayout.LayoutParams(m(40, dp), m(36, dp))
                     setOnClickListener {
                         val c = context ?: return@setOnClickListener
                         removeFromBlacklist(c, entry.sender)
-                        Toast.makeText(c, "✅ \"${entry.sender}\" unblocked", Toast.LENGTH_SHORT)
+                        Toast.makeText(c, "\"${entry.sender}\" unblocked", Toast.LENGTH_SHORT)
                             .show()
                         loadBlacklistSection()
                         loadInbox()
@@ -712,7 +711,7 @@ class SmsFragment : Fragment() {
                     .getString("scam_history_json", "[]") ?: "[]"
             )
         } catch (e: Exception) {
-            tvScamsCount.text = "⚠️ Scams — 0 flagged"
+            tvScamsCount.text = "Scams — 0 flagged"
             tvScamsPlaceholder.visibility = View.VISIBLE
             return
         }
@@ -728,7 +727,7 @@ class SmsFragment : Fragment() {
             scams.add(entry)
         }
 
-        tvScamsCount.text = "⚠️ Scams — ${scams.size} flagged"
+        tvScamsCount.text = "Scams — ${scams.size} flagged"
 
         if (scams.isEmpty()) {
             tvScamsPlaceholder.visibility = View.VISIBLE
@@ -771,7 +770,7 @@ class SmsFragment : Fragment() {
             row.addView(senderRow)
             row.addView(TextView(ctx).apply {
                 text = entry.messagePreview; textSize = 13f
-                setTextColor(Color.parseColor("#555555"))
+                setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -826,7 +825,7 @@ class SmsFragment : Fragment() {
         // Phase 3 — parallel AI verification, then quarantine on fused score
         Toast.makeText(
             ctx,
-            "🤖 Groq verifying ${aiCandidates.size} message(s) before quarantine…",
+            "Groq verifying ${aiCandidates.size} message(s) before quarantine…",
             Toast.LENGTH_SHORT
         ).show()
 
@@ -879,11 +878,11 @@ class SmsFragment : Fragment() {
                 .sendBroadcast(Intent("com.chipherlock.QUARANTINE_UPDATED"))
             Toast.makeText(
                 ctx,
-                "🔒 $added HIGH risk message(s) moved to Q-Zone",
+                "$added HIGH risk message(s) moved to Q-Zone",
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            Toast.makeText(ctx, "✅ No HIGH risk messages found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "No HIGH risk messages found", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -929,7 +928,7 @@ class SmsFragment : Fragment() {
             // through to step 3 and gets scored MEDIUM on keyword "BPI" /
             // "account" alone — landing it incorrectly in the Unknown tab.
             val result = when {
-                msg.type == 2 -> AnalysisResult(0, "LOW", "⚠️ Suspicious")
+                msg.type == 2 -> AnalysisResult(0, "LOW", "Suspicious")
                 else -> {
                     val indexedLevel = getMessageRisk(ctx, msg.smsId)
                     if (indexedLevel != null) {
@@ -941,7 +940,7 @@ class SmsFragment : Fragment() {
                             "MEDIUM" -> 55
                             else     -> 0
                         }
-                        AnalysisResult(score, indexedLevel, "📋 Scanned")
+                        AnalysisResult(score, indexedLevel, "Scanned")
                     } else {
                         historyVerdictFor(ctx, msg)
                             ?: analyzeMessage(msg.sender, msg.body).toAnalysisResult()
@@ -985,7 +984,7 @@ class SmsFragment : Fragment() {
         val contactsAll  = visible.count { it.tier == SenderTrust.CONTACT  }
         val companiesAll = visible.count { it.tier == SenderTrust.VERIFIED }
         // Spoofed messages roll into the Unknown tab so users don't see
-        // impersonators sitting under "🏛 Companies" with a trust badge.
+        // impersonators sitting under "Companies" with a trust badge.
         val unknownAll   = visible.count {
             it.tier == SenderTrust.UNKNOWN || it.tier == SenderTrust.SPOOFED
         }
@@ -994,12 +993,12 @@ class SmsFragment : Fragment() {
                     it.result.level != "LOW"
         }
 
-        tabFilterContacts.text = "👤 Contacts ($contactsAll)"
-        tabFilterCompanies.text = "🏛 Companies ($companiesAll)"
+        tabFilterContacts.text = "Contacts ($contactsAll)"
+        tabFilterCompanies.text = "Companies ($companiesAll)"
         // Unknown shows risky-count if any, otherwise the plain total
         tabFilterUnknown.text =
-            if (unknownRisky > 0) "❓ Unknown (⚠ $unknownRisky)"
-            else "❓ Unknown ($unknownAll)"
+            if (unknownRisky > 0) "Unknown ($unknownRisky)"
+            else "Unknown ($unknownAll)"
 
         // Visual selected-state: full color for the active tab, dim gray
         // for the inactive ones.
@@ -1017,8 +1016,8 @@ class SmsFragment : Fragment() {
         val totalRisky = visible.count { it.result.level != "LOW" }
         tvInboxCount.text =
             "${visible.size} conversation${if (visible.size != 1) "s" else ""}" +
-                    if (totalRisky > 0) " • 🟡 $totalRisky suspicious" else ""
-        tvInboxLegend.text = "🟢 Safe   🟡 Check   🔴 Scam   🔒 Quarantined"
+                    if (totalRisky > 0) " • $totalRisky suspicious" else ""
+        tvInboxLegend.text = "Safe   Check   Scam   Quarantined"
 
         // Render only the active filter's messages
         // Unknown tab also includes SPOOFED so impersonators surface here,
@@ -1111,13 +1110,13 @@ class SmsFragment : Fragment() {
         // colors the avatar when the message itself is benign (LOW).
         val trustTier = classifySender(ctx, msg.sender, result.level)
         val riskColor = when (result.level) {
-            "HIGH" -> Color.parseColor("#FF5252")    // red
-            "MEDIUM" -> Color.parseColor("#FF9800")    // orange
+            "HIGH" -> CipherPalette.danger    // red
+            "MEDIUM" -> CipherPalette.warning    // orange
             else -> when (trustTier) {
-                SenderTrust.CONTACT  -> Color.parseColor("#2E7D32")   // green for contacts
-                SenderTrust.VERIFIED -> Color.parseColor("#1976D2")   // blue for verified
-                SenderTrust.SPOOFED  -> Color.parseColor("#FF5252")   // red — impersonator
-                SenderTrust.UNKNOWN  -> Color.parseColor("#9E9E9E")   // gray for strangers
+                SenderTrust.CONTACT  -> CipherPalette.success   // green for contacts
+                SenderTrust.VERIFIED -> CipherPalette.primary   // blue for verified
+                SenderTrust.SPOOFED  -> CipherPalette.danger   // red — impersonator
+                SenderTrust.UNKNOWN  -> CipherPalette.textMuted   // gray for strangers
             }
         }
         val avatarColor = riskColor
@@ -1127,7 +1126,7 @@ class SmsFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            setBackgroundColor(Color.WHITE)
+            setBackgroundColor(CipherPalette.surface)
         }
 
         val row = LinearLayout(ctx).apply {
@@ -1146,9 +1145,8 @@ class SmsFragment : Fragment() {
         val trust = classifySender(ctx, msg.sender, result.level)
         val avatarLetter = when {
             msg.type == 2                  -> "→"
-            trust == SenderTrust.CONTACT   -> "👤"
-            trust == SenderTrust.VERIFIED  -> "🏛"
-            trust == SenderTrust.SPOOFED   -> "⚠"
+            trust == SenderTrust.VERIFIED  -> "✓"
+            trust == SenderTrust.SPOOFED   -> "!"
             else -> msg.sender.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         }
         val avatarSize = m(48, dp)
@@ -1182,7 +1180,7 @@ class SmsFragment : Fragment() {
             text = msg.sender
             textSize = 15f
             setTypeface(null, Typeface.BOLD)
-            setTextColor(Color.BLACK)
+            setTextColor(CipherPalette.textPrimary)
             maxLines = 1; ellipsize = TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
@@ -1204,7 +1202,7 @@ class SmsFragment : Fragment() {
         nameRow.addView(TextView(ctx).apply {
             text = timeStr
             textSize = 11f
-            setTextColor(Color.GRAY)
+            setTextColor(CipherPalette.textMuted)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).also { it.marginStart = m(8, dp) }
@@ -1215,7 +1213,7 @@ class SmsFragment : Fragment() {
         col.addView(TextView(ctx).apply {
             text = preview
             textSize = 13f
-            setTextColor(Color.GRAY)
+            setTextColor(CipherPalette.textMuted)
             maxLines = 1; ellipsize = TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1224,8 +1222,8 @@ class SmsFragment : Fragment() {
 
         if (msg.type != 2 && result.level != "LOW") {
             col.addView(TextView(ctx).apply {
-                text = if (result.level == "HIGH") "🔴 HIGH · ${result.category}"
-                else "🟡 SUSPICIOUS · ${result.category}"
+                text = if (result.level == "HIGH") "HIGH · ${result.category}"
+                else "SUSPICIOUS · ${result.category}"
                 textSize = 11f
                 setTextColor(riskColor)
                 maxLines = 1; ellipsize = TextUtils.TruncateAt.END
@@ -1239,7 +1237,7 @@ class SmsFragment : Fragment() {
         wrapper.addView(row)
 
         wrapper.addView(View(ctx).apply {
-            setBackgroundColor(Color.parseColor("#EEEEEE"))
+            setBackgroundColor(CipherPalette.surfaceHigh)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
         })
 
@@ -1283,12 +1281,12 @@ class SmsFragment : Fragment() {
         }
 
         val uniqueSenders = blocked.map { it.sender.trim() }.toSet().size
-        tvInboxCount.text = "🚫 ${blocked.size} blocked message(s) from $uniqueSenders sender(s)"
+        tvInboxCount.text = "${blocked.size} blocked message(s) from $uniqueSenders sender(s)"
         tvInboxLegend.text = "Showing all messages from blacklisted senders"
 
         llInboxList.addView(Button(ctx).apply {
-            text = "🗑️ CLEAR ALL LOGS"; textSize = 11f; setTextColor(Color.WHITE)
-            backgroundTintList = ColorStateList.valueOf(Color.parseColor("#B71C1C"))
+            text = "CLEAR ALL LOGS"; textSize = 11f; setTextColor(Color.WHITE)
+            backgroundTintList = ColorStateList.valueOf(CipherPalette.danger)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).also { it.bottomMargin = m(10, dp) }
@@ -1318,7 +1316,7 @@ class SmsFragment : Fragment() {
                 }
                 c.getSharedPreferences("scam_history_prefs", Context.MODE_PRIVATE)
                     .edit().remove("scam_history_json").apply()
-                Toast.makeText(c, "🗑️ $deletedCount message(s) deleted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(c, "$deletedCount message(s) deleted", Toast.LENGTH_SHORT).show()
                 loadBlacklistLogs()
             }
         })
@@ -1335,10 +1333,10 @@ class SmsFragment : Fragment() {
 
         blocked.groupBy { it.sender.trim() }.forEach { (sender, msgs) ->
             llInboxList.addView(TextView(ctx).apply {
-                text = "🚫  $sender — ${msgs.size} message(s)"
+                text = "$sender — ${msgs.size} message(s)"
                 textSize = 13f; setTypeface(null, Typeface.BOLD)
-                setTextColor(Color.parseColor("#B71C1C"))
-                setBackgroundColor(Color.parseColor("#FFEBEE"))
+                setTextColor(CipherPalette.danger)
+                setBackgroundColor(CipherPalette.dangerContainer)
                 val p = m(10, dp); setPadding(p, m(6, dp), p, m(6, dp))
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1356,9 +1354,9 @@ class SmsFragment : Fragment() {
     // ════════════════════════════════════════════════════════════════════
 
     private fun showMessageOptionsDialog(ctx: Context, msg: SmsEntry, result: AnalysisResult) {
-        val options = arrayOf("💬 Open Conversation", "🗑️ Delete Conversation")
+        val options = arrayOf("Open Conversation", "Delete Conversation")
         AlertDialog.Builder(ctx)
-            .setTitle("📱  ${msg.sender}")
+            .setTitle("${msg.sender}")
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> openConversation(msg.sender)
@@ -1385,11 +1383,11 @@ class SmsFragment : Fragment() {
                 val deleted = deleteConversationFromPhone(ctx, msg.sender)
                 // Log ONCE per conversation delete (not per message) so History
                 // doesn't get spammed when nuking a large thread.
-                logAction(ctx, msg.sender, msg.body, msg.date, "🗑️ Conversation deleted")
+                logAction(ctx, msg.sender, msg.body, msg.date, "Conversation deleted")
                 val note = when {
-                    deleted > 0 -> "🗑️ Deleted $deleted message${if (deleted != 1) "s" else ""} from \"${msg.sender}\""
-                    !isDefaultSmsApp(ctx) -> "🗑️ Set CHIPHERLOCK as default SMS app to delete from phone"
-                    else -> "🗑️ Nothing to delete"
+                    deleted > 0 -> "Deleted $deleted message${if (deleted != 1) "s" else ""} from \"${msg.sender}\""
+                    !isDefaultSmsApp(ctx) -> "Set CHIPHERLOCK as default SMS app to delete from phone"
+                    else -> "Nothing to delete"
                 }
                 Toast.makeText(ctx, note, Toast.LENGTH_LONG).show()
                 loadInbox()
@@ -1456,8 +1454,8 @@ class SmsFragment : Fragment() {
     private fun openConversation(sender: String, restrictToTier: SenderTrust? = null) {
         val ctx = context ?: return
         val dp = ctx.resources.displayMetrics.density
-        val blue = Color.parseColor("#1976D2")
-        val red = Color.parseColor("#FF5252")
+        val blue = CipherPalette.primary
+        val red = CipherPalette.danger
 
         panelInbox.visibility = View.GONE
         panelScanner.visibility = View.GONE
@@ -1484,14 +1482,14 @@ class SmsFragment : Fragment() {
             setOnClickListener { closeConversation() }
         })
         header.addView(TextView(ctx).apply {
-            text = "📱  $sender"; textSize = 14f
+            text = sender; textSize = 14f
             setTypeface(null, Typeface.BOLD); setTextColor(Color.WHITE)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(ctx).apply {
-            text = "🚫"; textSize = 13f; setTextColor(Color.WHITE)
+            text = "Block"; textSize = 12f; isAllCaps = false; setTextColor(Color.WHITE)
             backgroundTintList = ColorStateList.valueOf(red)
-            layoutParams = LinearLayout.LayoutParams(m(48, dp), m(48, dp))
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, m(48, dp))
             setOnClickListener {
                 val c = context ?: return@setOnClickListener
                 saveToBlacklist(
@@ -1500,7 +1498,7 @@ class SmsFragment : Fragment() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
-                Toast.makeText(c, "🚫 \"$sender\" blocked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(c, "\"$sender\" blocked", Toast.LENGTH_SHORT).show()
                 closeConversation()
                 loadInbox()
                 loadBlacklistSection()
@@ -1549,7 +1547,7 @@ class SmsFragment : Fragment() {
             threadContainer.addView(
                 emptyState(
                     ctx,
-                    "No messages with this sender yet.\nSend one below! 👇"
+                    "No messages with this sender yet.\nSend one below!"
                 )
             )
         } else {
@@ -1568,10 +1566,10 @@ class SmsFragment : Fragment() {
         val hasPromo     = noPromoPrefs.getString("active_promo_id", null) != null
         if (VaultKeyManager.isUnlocked() && !hasPromo) {
             val warnBanner = TextView(ctx).apply {
-                text      = "⚠️ No active promo detected — SMS costs ₱1.00 each. Tap 📶 to check your load."
+                text      = "No active promo detected — SMS costs ₱1.00 each. Tap to check your load."
                 textSize  = 12f
                 setTextColor(Color.WHITE)
-                setBackgroundColor(Color.parseColor("#E65100"))
+                setBackgroundColor(CipherPalette.warning)
                 val p = m(10, dp); setPadding(p, p, p, p)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -1584,7 +1582,7 @@ class SmsFragment : Fragment() {
         val sendBar = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            setBackgroundColor(CipherPalette.surface)
             val p = m(8, dp); setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1592,7 +1590,7 @@ class SmsFragment : Fragment() {
         }
         val tvCharCount = TextView(ctx).apply {
             text = "160"; textSize = 11f
-            setTextColor(Color.GRAY)
+            setTextColor(CipherPalette.textMuted)
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -1602,7 +1600,7 @@ class SmsFragment : Fragment() {
         val etMessage = EditText(ctx).apply {
             hint = "Type a message…"; textSize = 14f
             setSingleLine(false); maxLines = 3
-            setBackgroundColor(Color.WHITE)
+            setBackgroundColor(CipherPalette.surface)
             filters = arrayOf(android.text.InputFilter.LengthFilter(160))
             val p = m(8, dp); setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
@@ -1614,7 +1612,7 @@ class SmsFragment : Fragment() {
                     val remaining = 160 - (s?.length ?: 0)
                     tvCharCount.text = remaining.toString()
                     tvCharCount.setTextColor(
-                        if (remaining <= 20) Color.parseColor("#FF5252") else Color.GRAY
+                        if (remaining <= 20) CipherPalette.danger else CipherPalette.textMuted
                     )
                 }
             })
@@ -1623,10 +1621,12 @@ class SmsFragment : Fragment() {
         sendBar.addView(tvCharCount)
         // Phase 4.1 — Load Tracker button in conversation send bar
         sendBar.addView(Button(ctx).apply {
-            text = "📶"
-            textSize = 16f
-            backgroundTintList = ColorStateList.valueOf(Color.parseColor("#7B2D8B"))
-            setTextColor(Color.WHITE)
+            text = "Load"
+            textSize = 12f
+            isAllCaps = false
+            contentDescription = "Load balance"
+            backgroundTintList = ColorStateList.valueOf(CipherPalette.warning)
+            setTextColor(CipherPalette.onPrimary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1688,8 +1688,8 @@ class SmsFragment : Fragment() {
         val isOutgoing = entry.type == 2
         val sdf = SimpleDateFormat("MMM dd  HH:mm", Locale.getDefault())
         val bubbleColor =
-            if (isOutgoing) Color.parseColor("#1976D2") else Color.parseColor("#E8E8E8")
-        val textColor = if (isOutgoing) Color.WHITE else Color.BLACK
+            if (isOutgoing) CipherPalette.primaryContainer else CipherPalette.surfaceHigh
+        val textColor = CipherPalette.textPrimary
         val wrapGravity = if (isOutgoing) Gravity.END else Gravity.START
 
         val wrapper = LinearLayout(ctx).apply {
@@ -1739,7 +1739,7 @@ class SmsFragment : Fragment() {
             text = sdf.format(Date(entry.date))
             textSize = 10f
             gravity = Gravity.END
-            setTextColor(if (isOutgoing) Color.parseColor("#BBDEFB") else Color.GRAY)
+            setTextColor(if (isOutgoing) CipherPalette.textPrimary else CipherPalette.textMuted)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1747,18 +1747,18 @@ class SmsFragment : Fragment() {
         })
 
         bubble.setOnLongClickListener {
-            val options = if (isOutgoing) arrayOf("↩️ Unsend", "🗑️ Delete")
-            else arrayOf("🗑️ Delete")
+            val options = if (isOutgoing) arrayOf("Unsend", "Delete")
+            else arrayOf("Delete")
             AlertDialog.Builder(ctx)
                 .setTitle(if (isOutgoing) "Your message" else "From $sender")
                 .setItems(options) { _, which ->
                     val c = context ?: return@setItems
-                    val action = if (isOutgoing && which == 0) "↩️ Unsent" else "🗑️ Deleted"
+                    val action = if (isOutgoing && which == 0) "Unsent" else "Deleted"
                     deleteFromPhone(c, entry.smsId)
                     addSoftDeleted(c, entry.smsId, sender, entry.body)
                     logAction(c, sender, entry.body, entry.date, action)
                     val label =
-                        if (action.contains("Unsent")) "↩️ Message unsent" else "🗑️ Message deleted"
+                        if (action.contains("Unsent")) "Message unsent" else "Message deleted"
                     Toast.makeText(c, label, Toast.LENGTH_SHORT).show()
                     threadContainer.removeView(wrapper)
                 }
@@ -1818,7 +1818,7 @@ class SmsFragment : Fragment() {
                 buildThreadBubble(ctx, sent, recipient, scrollView, threadContainer, dp)
             )
             scrollView.post { scrollView.fullScroll(View.FOCUS_DOWN) }
-            Toast.makeText(ctx, "✅ Message sent", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "Message sent", Toast.LENGTH_SHORT).show()
 
             LocalBroadcastManager.getInstance(ctx)
                 .sendBroadcast(Intent("com.chipherlock.SMS_RECEIVED_REFRESH").apply {
@@ -1826,7 +1826,7 @@ class SmsFragment : Fragment() {
                 })
 
         } catch (e: Exception) {
-            Toast.makeText(ctx, "❌ Send failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, "Send failed: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -1852,11 +1852,11 @@ class SmsFragment : Fragment() {
         val ctx = context ?: return
         if (isAutoQuarantineEnabled(ctx)) {
             tvAutoQuarantineStatus.text =
-                "✅ Active — HIGH risk messages will be sent to Q-Zone automatically."
-            tvAutoQuarantineStatus.setTextColor(Color.parseColor("#388E3C"))
+                "Active — HIGH risk messages will be sent to Q-Zone automatically."
+            tvAutoQuarantineStatus.setTextColor(CipherPalette.success)
         } else {
             tvAutoQuarantineStatus.text = "OFF — HIGH risk messages will not be quarantined"
-            tvAutoQuarantineStatus.setTextColor(Color.GRAY)
+            tvAutoQuarantineStatus.setTextColor(CipherPalette.textMuted)
         }
     }
 
@@ -1915,7 +1915,7 @@ class SmsFragment : Fragment() {
             // Every message in this scan window is already in the LOW cache
             // or Q-Zone — zero Groq calls needed.
             showAiStatus(
-                "✅ All ${keywordResults.size} message(s) already verified — 0 Groq calls used",
+                "All ${keywordResults.size} message(s) already verified — 0 Groq calls used",
                 busy = false
             )
             // Write the per-message risk index so the conversation view can
@@ -1926,7 +1926,7 @@ class SmsFragment : Fragment() {
 
         if (!GroqScamAnalyzer.isConfigured()) {
             showAiStatus(
-                "⚠️  AI disabled — paste your API key in GroqScamAnalyzer.kt",
+                "AI disabled — paste your API key in GroqScamAnalyzer.kt",
                 busy = false
             )
             keywordResults.forEach { (msg, bd) -> setMessageRisk(ctx, msg.smsId, bd.level) }
@@ -1938,9 +1938,9 @@ class SmsFragment : Fragment() {
         val skipped = keywordResults.size - aiCandidates.size
         showAiStatus(
             if (skipped > 0)
-                "🤖 Groq verifying ${aiCandidates.size} new — $skipped already cached…"
+                "Groq verifying ${aiCandidates.size} new — $skipped already cached…"
             else
-                "🤖 Groq verifying ${aiCandidates.size} message(s)…",
+                "Groq verifying ${aiCandidates.size} message(s)…",
             busy = true
         )
 
@@ -2010,13 +2010,13 @@ class SmsFragment : Fragment() {
             showAiStatus(
                 when {
                     failedCount > 0 && verifiedCount > 0 ->
-                        "✅ AI verified $verifiedCount  •  ⚠️ $failedCount failed (used keyword score)"
+                        "AI verified $verifiedCount  •  $failedCount failed (used keyword score)"
 
                     failedCount > 0 ->
-                        "⚠️ AI unavailable — using keyword score only"
+                        "AI unavailable — using keyword score only"
 
                     else ->
-                        "✅ AI verified $verifiedCount message(s)"
+                        "AI verified $verifiedCount message(s)"
                 },
                 busy = false
             )
@@ -2086,16 +2086,16 @@ class SmsFragment : Fragment() {
         }
 
         val parts = mutableListOf(
-            "🔴 ${high.size} high",
-            "🟡 ${medium.size} suspicious",
-            "🟢 ${safe.size} safe"
+            "${high.size} high",
+            "${medium.size} suspicious",
+            "${safe.size} safe"
         )
-        if (qCount > 0) parts.add("🔒 $qCount quarantined")
+        if (qCount > 0) parts.add("$qCount quarantined")
         tvScanSummary.text = parts.joinToString(" | ")
         tvScanSummary.visibility = View.VISIBLE
 
         if (high.isNotEmpty()) {
-            addSectionHeader("🔴 HIGH RISK — ${high.size} message(s)", "#FF5252")
+            addSectionHeader("HIGH RISK — ${high.size} message(s)", "#FF5252")
             high.forEach { (msg, bd) ->
                 llScanResults.addView(
                     buildDetailCard(
@@ -2110,7 +2110,7 @@ class SmsFragment : Fragment() {
             }
         }
         if (medium.isNotEmpty()) {
-            addSectionHeader("🟡 SUSPICIOUS — ${medium.size} message(s)", "#FF9800")
+            addSectionHeader("SUSPICIOUS — ${medium.size} message(s)", "#FF9800")
             medium.forEach { (msg, bd) ->
                 llScanResults.addView(
                     buildDetailCard(
@@ -2125,7 +2125,7 @@ class SmsFragment : Fragment() {
             }
         }
         if (safe.isNotEmpty()) {
-            addSectionHeader("🟢 SAFE — ${safe.size} message(s)", "#4CAF50")
+            addSectionHeader("SAFE — ${safe.size} message(s)", "#4CAF50")
             safe.forEach { (msg, bd) ->
                 llScanResults.addView(
                     buildDetailCard(
@@ -2276,10 +2276,10 @@ class SmsFragment : Fragment() {
                 })
                 addView(TextView(ctx).apply {
                     val contactName = ContactsHelper.getContactName(ctx, sender)
-                    text = if (contactName != null) "📱  $contactName  ($sender)"
-                    else "📱  $sender"
+                    text = if (contactName != null) "$contactName  ($sender)"
+                    else "$sender"
                     textSize = 14f
-                    setTypeface(null, Typeface.BOLD); setTextColor(Color.BLACK)
+                    setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textPrimary)
                     layoutParams =
                         LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 })
@@ -2287,7 +2287,7 @@ class SmsFragment : Fragment() {
 
             // ── Category ──
             addView(TextView(ctx).apply {
-                text = "📅  ${breakdown.category}"; textSize = 12f; setTextColor(Color.DKGRAY)
+                text = "${breakdown.category}"; textSize = 12f; setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(6, dp) }
@@ -2295,8 +2295,8 @@ class SmsFragment : Fragment() {
 
             // ── Timestamp + source ──
             addView(TextView(ctx).apply {
-                text = "🕐  ${sdf.format(Date(timestamp))}  ·  📌  $source"
-                textSize = 11f; setTextColor(Color.GRAY)
+                text = "${sdf.format(Date(timestamp))}  ·  $source"
+                textSize = 11f; setTextColor(CipherPalette.textMuted)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(2, dp) }
@@ -2304,8 +2304,8 @@ class SmsFragment : Fragment() {
 
             // ── Message body ──
             addView(TextView(ctx).apply {
-                text = "💬  Message:"; textSize = 12f
-                setTypeface(null, Typeface.BOLD); setTextColor(Color.DKGRAY)
+                text = "Message:"; textSize = 12f
+                setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(8, dp) }
@@ -2339,7 +2339,7 @@ class SmsFragment : Fragment() {
 
         val entries = loadQuarantine(ctx)
         tvQuarantineCount.text =
-            "🔒 ${entries.size} quarantined message${if (entries.size != 1) "s" else ""}"
+            "${entries.size} quarantined message${if (entries.size != 1) "s" else ""}"
 
         if (!isDefault) {
             llQuarantineList.addView(buildDefaultSmsWarning(ctx, dp))
@@ -2367,9 +2367,9 @@ class SmsFragment : Fragment() {
             }
             clearQuarantine(c)
             val msg = when {
-                deletedCount > 0 -> "🗑️ $deletedCount message(s) permanently deleted from phone"
-                !isDefaultSmsApp(c) -> "🗑️ Quarantine cleared — set CHIPHERLOCK as default SMS app to delete from phone"
-                else -> "🗑️ Quarantine cleared"
+                deletedCount > 0 -> "$deletedCount message(s) permanently deleted from phone"
+                !isDefaultSmsApp(c) -> "Quarantine cleared — set CHIPHERLOCK as default SMS app to delete from phone"
+                else -> "Quarantine cleared"
             }
             Toast.makeText(c, msg, Toast.LENGTH_LONG).show()
             loadQZone()
@@ -2381,7 +2381,7 @@ class SmsFragment : Fragment() {
     private fun buildDefaultSmsWarning(ctx: Context, dp: Float): View {
         return LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#FFF8E1"))
+            setBackgroundColor(CipherPalette.warningContainer)
             val p = m(12, dp)
             setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(
@@ -2390,15 +2390,15 @@ class SmsFragment : Fragment() {
 
             addView(TextView(ctx).apply {
                 text =
-                    "⚠️ Set CHIPHERLOCK as your default SMS app to permanently delete messages from your phone."
-                textSize = 13f; setTextColor(Color.parseColor("#E65100"))
+                    "Set CHIPHERLOCK as your default SMS app to permanently delete messages from your phone."
+                textSize = 13f; setTextColor(CipherPalette.warning)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 )
             })
             addView(Button(ctx).apply {
-                text = "📱 SET AS DEFAULT SMS APP"; textSize = 12f; setTextColor(Color.WHITE)
-                backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9800"))
+                text = "SET AS DEFAULT SMS APP"; textSize = 12f; setTextColor(Color.WHITE)
+                backgroundTintList = ColorStateList.valueOf(CipherPalette.warning)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(8, dp) }
@@ -2409,8 +2409,8 @@ class SmsFragment : Fragment() {
 
     private fun buildQZoneCard(ctx: Context, entry: QuarantineEntry, isDefault: Boolean): View {
         val dp = ctx.resources.displayMetrics.density
-        val purple = Color.parseColor("#9C27B0")
-        val red = Color.parseColor("#FF5252")
+        val purple = CipherPalette.warning
+        val red = CipherPalette.danger
         val sdf = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
 
         return LinearLayout(ctx).apply {
@@ -2430,7 +2430,7 @@ class SmsFragment : Fragment() {
                 )
 
                 addView(TextView(ctx).apply {
-                    text = "  🔒 QUARANTINED  "; textSize = 11f
+                    text = "  QUARANTINED  "; textSize = 11f
                     setTypeface(null, Typeface.BOLD); setTextColor(Color.WHITE)
                     setBackgroundColor(purple)
                     layoutParams = LinearLayout.LayoutParams(
@@ -2439,15 +2439,15 @@ class SmsFragment : Fragment() {
                     ).also { it.marginEnd = m(8, dp) }
                 })
                 addView(TextView(ctx).apply {
-                    text = "📱  ${entry.sender}"; textSize = 13f
-                    setTypeface(null, Typeface.BOLD); setTextColor(Color.BLACK)
+                    text = entry.sender; textSize = 13f
+                    setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textPrimary)
                     layoutParams =
                         LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 })
                 addView(Button(ctx).apply {
-                    text = "🗑️"; textSize = 13f; setTextColor(Color.WHITE)
+                    text = "Delete"; textSize = 12f; isAllCaps = false; setTextColor(Color.WHITE)
                     backgroundTintList = ColorStateList.valueOf(red)
-                    layoutParams = LinearLayout.LayoutParams(m(48, dp), m(48, dp))
+                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, m(48, dp))
 
 
                     setOnClickListener {
@@ -2460,7 +2460,7 @@ class SmsFragment : Fragment() {
                         list.removeAll { it.sender.trim() + "|" + it.messageBody.take(60) == key }
                         saveQuarantineList(c, list)
                         val msg = when {
-                            deletedFromPhone -> "🗑️ Deleted from phone and quarantine"
+                            deletedFromPhone -> "Deleted from phone and quarantine"
                             !isDefaultSmsApp(c) -> "Removed from quarantine only — set CHIPHERLOCK as default SMS app to delete from phone"
                             else -> "Removed from quarantine"
                         }
@@ -2471,23 +2471,23 @@ class SmsFragment : Fragment() {
             })
 
             addView(TextView(ctx).apply {
-                text = "📅  ${entry.category}"; textSize = 12f; setTextColor(Color.DKGRAY)
+                text = "${entry.category}"; textSize = 12f; setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(6, dp) }
             })
 
             addView(TextView(ctx).apply {
-                text = "🕐  ${sdf.format(Date(entry.timestamp))}  ·  📌  Auto-Quarantine"
-                textSize = 11f; setTextColor(Color.GRAY)
+                text = "${sdf.format(Date(entry.timestamp))}  ·  Auto-Quarantine"
+                textSize = 11f; setTextColor(CipherPalette.textMuted)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(2, dp) }
             })
 
             addView(TextView(ctx).apply {
-                text = "💬  Message:"; textSize = 12f
-                setTypeface(null, Typeface.BOLD); setTextColor(Color.DKGRAY)
+                text = "Message:"; textSize = 12f
+                setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.topMargin = m(8, dp) }
@@ -2520,7 +2520,7 @@ class SmsFragment : Fragment() {
     // ════════════════════════════════════════════════════════════════════
 
     private fun buildReleaseButton(ctx: Context, entry: QuarantineEntry, dp: Float): View {
-        val green = Color.parseColor("#2E7D32")
+        val green = CipherPalette.success
         val container = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
@@ -2532,18 +2532,18 @@ class SmsFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, (1*dp).toInt()
             ).also { it.bottomMargin = (8*dp).toInt() }
-            setBackgroundColor(Color.parseColor("#E0E0E0"))
+            setBackgroundColor(CipherPalette.outlineSoft)
         })
         container.addView(TextView(ctx).apply {
-            text = "⚠️ Review the score breakdown above before releasing."
-            textSize = 12f; setTextColor(Color.parseColor("#E65100"))
+            text = "Review the score breakdown above before releasing."
+            textSize = 12f; setTextColor(CipherPalette.warning)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).also { it.bottomMargin = (8*dp).toInt() }
         })
         container.addView(Button(ctx).apply {
-            text = "✅  Release to Inbox"
+            text = "Release to Inbox"
             textSize = 13f; setTextColor(Color.WHITE)
             backgroundTintList = ColorStateList.valueOf(green)
             layoutParams = LinearLayout.LayoutParams(
@@ -2589,7 +2589,7 @@ class SmsFragment : Fragment() {
             timestamp      = System.currentTimeMillis(),
             source         = "Q-Zone Release"
         ))
-        Toast.makeText(ctx, "✅ Released to Inbox", Toast.LENGTH_SHORT).show()
+        Toast.makeText(ctx, "Released to Inbox", Toast.LENGTH_SHORT).show()
         NotificationCounter.markRead(ctx, SmsCategory.QZONE)
         loadQZone()
         updateDrawerHeader()
@@ -2701,7 +2701,7 @@ class SmsFragment : Fragment() {
         val lower = body.lowercase()
         var score = 0
         val factors = mutableListOf<ScoreFactor>()
-        var category = "⚠️ Suspicious"
+        var category = "Suspicious"
 
         val phKeywords = mapOf(
             "gcash" to 20, "maya" to 15, "nanalo" to 25, "premyo" to 25,
@@ -2740,42 +2740,42 @@ class SmsFragment : Fragment() {
 
         // Category hints — first hit wins
         val categoryHints = mapOf(
-            "gcash" to "💳 Financial Fraud", "maya" to "💳 Financial Fraud",
-            "bayad" to "💳 Financial Fraud", "padala" to "💳 Financial Fraud",
-            "pera" to "💳 Financial Fraud", "bank" to "💳 Financial Fraud",
-            "bdo" to "💳 Financial Fraud", "metrobank" to "💳 Financial Fraud",
-            "bpi" to "💳 Financial Fraud", "unionbank" to "💳 Financial Fraud",
-            "account" to "💳 Financial Fraud", "credit card" to "💳 Financial Fraud",
-            "atm" to "💳 Financial Fraud",
-            "nanalo" to "🎰 Prize Scam", "premyo" to "🎰 Prize Scam",
-            "winner" to "🎰 Prize Scam", "prize" to "🎰 Prize Scam",
-            "congratulations" to "🎰 Prize Scam", "lottery" to "🎰 Prize Scam",
-            "free gift" to "🎰 Prize Scam", "you have won" to "🎰 Prize Scam",
-            "warrant" to "⚖️ Legal Threat", "arestuhin" to "⚖️ Legal Threat",
-            "hulihin" to "⚖️ Legal Threat", "kaso" to "⚖️ Legal Threat",
-            "imbestigasyon" to "⚖️ Legal Threat", "korte" to "⚖️ Legal Threat",
-            "mandato" to "⚖️ Legal Threat", "arrest" to "⚖️ Legal Threat",
-            "legal action" to "⚖️ Legal Threat",
-            "bsp" to "🏛️ Gov't Impersonation", "philhealth" to "🏛️ Gov't Impersonation",
-            "sss" to "🏛️ Gov't Impersonation", "pagibig" to "🏛️ Gov't Impersonation",
-            "bir" to "🏛️ Gov't Impersonation", "pulis" to "🏛️ Gov't Impersonation",
-            "nbi" to "🏛️ Gov't Impersonation", "government" to "🏛️ Gov't Impersonation",
-            "official" to "🏛️ Gov't Impersonation", "ssn" to "🏛️ Gov't Impersonation",
-            "social security" to "🏛️ Gov't Impersonation",
-            "bit.ly" to "🔗 Phishing Link", "tinyurl" to "🔗 Phishing Link",
-            ".tk" to "🔗 Phishing Link", "click here" to "🔗 Phishing Link",
-            "mag-click" to "🔗 Phishing Link",
-            "otp" to "🔑 Credential Theft", "password" to "🔑 Credential Theft",
-            "verify" to "🔑 Credential Theft", "i-verify" to "🔑 Credential Theft",
-            "login" to "🔑 Credential Theft", "mag-login" to "🔑 Credential Theft",
-            "credential" to "🔑 Credential Theft", "pin" to "🔑 Credential Theft",
-            "suspended" to "🔑 Credential Theft", "suspendido" to "🔑 Credential Theft",
-            "blocked" to "🔑 Credential Theft", "restore" to "🔑 Credential Theft",
-            "identity" to "🔑 Credential Theft", "security alert" to "🔑 Credential Theft",
-            "unauthorized" to "🔑 Credential Theft"
+            "gcash" to "Financial Fraud", "maya" to "Financial Fraud",
+            "bayad" to "Financial Fraud", "padala" to "Financial Fraud",
+            "pera" to "Financial Fraud", "bank" to "Financial Fraud",
+            "bdo" to "Financial Fraud", "metrobank" to "Financial Fraud",
+            "bpi" to "Financial Fraud", "unionbank" to "Financial Fraud",
+            "account" to "Financial Fraud", "credit card" to "Financial Fraud",
+            "atm" to "Financial Fraud",
+            "nanalo" to "Prize Scam", "premyo" to "Prize Scam",
+            "winner" to "Prize Scam", "prize" to "Prize Scam",
+            "congratulations" to "Prize Scam", "lottery" to "Prize Scam",
+            "free gift" to "Prize Scam", "you have won" to "Prize Scam",
+            "warrant" to "Legal Threat", "arestuhin" to "Legal Threat",
+            "hulihin" to "Legal Threat", "kaso" to "Legal Threat",
+            "imbestigasyon" to "Legal Threat", "korte" to "Legal Threat",
+            "mandato" to "Legal Threat", "arrest" to "Legal Threat",
+            "legal action" to "Legal Threat",
+            "bsp" to "Gov't Impersonation", "philhealth" to "Gov't Impersonation",
+            "sss" to "Gov't Impersonation", "pagibig" to "Gov't Impersonation",
+            "bir" to "Gov't Impersonation", "pulis" to "Gov't Impersonation",
+            "nbi" to "Gov't Impersonation", "government" to "Gov't Impersonation",
+            "official" to "Gov't Impersonation", "ssn" to "Gov't Impersonation",
+            "social security" to "Gov't Impersonation",
+            "bit.ly" to "Phishing Link", "tinyurl" to "Phishing Link",
+            ".tk" to "Phishing Link", "click here" to "Phishing Link",
+            "mag-click" to "Phishing Link",
+            "otp" to "Credential Theft", "password" to "Credential Theft",
+            "verify" to "Credential Theft", "i-verify" to "Credential Theft",
+            "login" to "Credential Theft", "mag-login" to "Credential Theft",
+            "credential" to "Credential Theft", "pin" to "Credential Theft",
+            "suspended" to "Credential Theft", "suspendido" to "Credential Theft",
+            "blocked" to "Credential Theft", "restore" to "Credential Theft",
+            "identity" to "Credential Theft", "security alert" to "Credential Theft",
+            "unauthorized" to "Credential Theft"
         )
 
-        val initialCategory = "⚠️ Suspicious"
+        val initialCategory = "Suspicious"
 
         fun recordHit(keyword: String, points: Int) {
             score += points
@@ -2792,13 +2792,13 @@ class SmsFragment : Fragment() {
         if (Regex("https?://").containsMatchIn(lower)) {
             score += 15
             factors.add(ScoreFactor("Suspicious URL detected", 15))
-            if (category == initialCategory) category = "🔗 Phishing Link"
+            if (category == initialCategory) category = "Phishing Link"
         }
         // Bracket-obfuscated URLs: domain[.]com or domain[dot]com
         if (lower.contains("[.]") || lower.contains("[dot]")) {
             score += 40
             factors.add(ScoreFactor("Obfuscated phishing link [.] detected", 40))
-            if (category == initialCategory) category = "🔗 Phishing Link"
+            if (category == initialCategory) category = "Phishing Link"
         }
         if (sender.trim().matches(Regex("\\d{4,6}"))) {
             score += 10
@@ -3037,9 +3037,9 @@ class SmsFragment : Fragment() {
     // ════════════════════════════════════════════════════════════════════
 
     private fun riskColor(level: String) = when (level) {
-        "HIGH" -> Color.parseColor("#FF5252")
-        "MEDIUM" -> Color.parseColor("#FF9800")
-        else -> Color.parseColor("#4CAF50")
+        "HIGH" -> CipherPalette.danger
+        "MEDIUM" -> CipherPalette.warning
+        else -> CipherPalette.success
     }
 
     private fun m(dp: Int, density: Float) = (dp * density).toInt()
@@ -3047,8 +3047,8 @@ class SmsFragment : Fragment() {
     private fun previewBox(ctx: Context, text: String, dp: Float) =
         TextView(ctx).apply {
             this.text = text; textSize = 12f
-            typeface = Typeface.MONOSPACE; setTextColor(Color.DKGRAY)
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            typeface = Typeface.MONOSPACE; setTextColor(CipherPalette.textSecondary)
+            setBackgroundColor(CipherPalette.surface)
             val p = m(8, dp); setPadding(p, p, p, p)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -3063,7 +3063,7 @@ class SmsFragment : Fragment() {
             ).also { it.topMargin = m(8, dp) }
             addView(TextView(ctx).apply {
                 text = "Risk Score:"; textSize = 11f
-                setTypeface(null, Typeface.BOLD); setTextColor(Color.DKGRAY)
+                setTypeface(null, Typeface.BOLD); setTextColor(CipherPalette.textSecondary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 ).also { it.marginEnd = m(8, dp) }
@@ -3086,7 +3086,7 @@ class SmsFragment : Fragment() {
     private fun emptyState(ctx: Context, msg: String) =
         TextView(ctx).apply {
             text = msg; textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setTextColor(Color.GRAY); setPadding(24, 64, 24, 64)
+            setTextColor(CipherPalette.textMuted); setPadding(24, 64, 24, 64)
         }
 
     // ════════════════════════════════════════════════════════════════════
@@ -3403,16 +3403,16 @@ class SmsFragment : Fragment() {
                 fusedFactors.add(
                     ScoreFactor(
                         label = if (isVerified)
-                            "🤖 AI verdict: ${ai.risk} — ${ai.reason} (verified sender: AI weighted 80%)"
+                            "AI verdict: ${ai.risk} — ${ai.reason} (verified sender: AI weighted 80%)"
                         else
-                            "🤖 AI verdict: ${ai.risk} — ${ai.reason}",
+                            "AI verdict: ${ai.risk} — ${ai.reason}",
                         points = aiContribution
                     )
                 )
             } else {
                 fusedFactors.add(
                     ScoreFactor(
-                        label = "⚠️ AI unavailable — keyword score only (${ai.reason})",
+                        label = "AI unavailable — keyword score only (${ai.reason})",
                         points = 0
                     )
                 )
@@ -3427,11 +3427,11 @@ class SmsFragment : Fragment() {
                 ai.success && ai.category.isNotBlank() && ai.category != "New Message" ->
                     ai.category
                 ai.success && ai.risk == "HIGH" ->
-                    "🤖 AI-Flagged Scam"
-                keyword.category != "⚠️ Suspicious" && keyword.category != "New Message" ->
+                    "AI-Flagged Scam"
+                keyword.category != "Suspicious" && keyword.category != "New Message" ->
                     keyword.category
                 else ->
-                    "⚠️ Suspicious"
+                    "Suspicious"
             }
 
             return ScoreBreakdown(

@@ -1,6 +1,5 @@
 package com.chipherlock.app
 
-import androidx.biometric.BiometricPrompt
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,31 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val PERMISSIONS_REQUEST_CODE = 100
 
-    // ─── REM-005 — inactivity timer ──────────────────────────────────────
-    private val idleHandler = android.os.Handler(android.os.Looper.getMainLooper())
-    private val idleRunnable = Runnable {
-        VaultAuthManager.markLocked()
-        if (binding.bottomNavigation.selectedItemId == R.id.nav_vault) {
-            binding.bottomNavigation.selectedItemId = R.id.nav_sms
-            android.widget.Toast.makeText(
-                this,
-                "Vault locked after inactivity. Tap Vault to re-authenticate.",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-    private val idleTimeoutMs = 3 * 60 * 1000L
+    private lateinit var loginScreen: LoginScreen
     private var startupSound: android.media.MediaPlayer? = null
-
-    private fun resetIdleTimer() {
-        idleHandler.removeCallbacks(idleRunnable)
-        idleHandler.postDelayed(idleRunnable, idleTimeoutMs)
-    }
-
-    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
-        if (ev.action == android.view.MotionEvent.ACTION_DOWN) resetIdleTimer()
-        return super.dispatchTouchEvent(ev)
-    }
 
     private val REQUIRED_PERMISSIONS = buildList {
         add(Manifest.permission.READ_SMS)
@@ -118,7 +94,9 @@ class MainActivity : AppCompatActivity() {
         requestAppPermissions()
         setupBottomNavigation()
         handleIncomingAlert(savedInstanceState)
-        resetIdleTimer()   // REM-005 — start inactivity countdown
+
+        loginScreen = LoginScreen(this, binding.loginOverlay) { onSessionUnlocked() }
+        if (VaultAuthManager.shouldGate()) loginScreen.show(animate = true)
     }
 
 
@@ -237,127 +215,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
-            // REM-002 — vault + report tabs are gated; everything else navigates immediately.
-            if ((item.itemId == R.id.nav_vault || item.itemId == R.id.nav_report)
-                && VaultAuthManager.shouldGate()) {
-                gateVaultThen {
-                    showFragment(
-                        if (item.itemId == R.id.nav_report) ReportFragment()
-                        else VaultFragment()
-                    )
-                    binding.bottomNavigation.selectedItemId = item.itemId
-                }
+            // REM-002 — vault + report need an unlocked session; the Login page provides it.
+            if (isVaultTab(item.itemId) && VaultAuthManager.shouldGate()) {
+                loginScreen.show(animate = true)
+                loginScreen.focusInput()
                 return@setOnItemSelectedListener false
             }
-            val fragment = when (item.itemId) {
-                R.id.nav_sms     -> SmsFragment.newInstance(null)
-                R.id.nav_vault   -> VaultFragment()
-                R.id.nav_network -> NetworkFragment()
-                R.id.nav_coach   -> HelpDeskFragment()
-                R.id.nav_report  -> ReportFragment()
-                else             -> SmsFragment.newInstance(null)
-            }
-            showFragment(fragment)
+            showFragment(fragmentFor(item.itemId))
             true
         }
     }
-    private fun showEnrollmentDialog(onSuccess: () -> Unit) {
-        val ctx = this
-        val content = layoutInflater.inflate(R.layout.dialog_vault_master_create, null)
-        val etPw = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterPassword)
-        val etCon = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterConfirm)
 
-        val dialog = VaultDialogUi.builder(ctx)
-            .setTitle(R.string.vault_master_create_title)
-            .setView(content)
-            .setPositiveButton("Create", null)
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
+    private fun isVaultTab(itemId: Int) = itemId == R.id.nav_vault || itemId == R.id.nav_report
 
-        VaultDialogUi.showStyled(dialog)
-        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-            .setOnClickListener {
-                val pw1 = etPw.text?.toString().orEmpty()
-                val pw2 = etCon.text?.toString().orEmpty()
-                if (pw1.length < 8) {
-                    android.widget.Toast.makeText(ctx,
-                        "Password must be at least 8 characters",
-                        android.widget.Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-                if (pw1 != pw2) {
-                    android.widget.Toast.makeText(ctx,
-                        "Passwords do not match",
-                        android.widget.Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-                val pwChars = pw1.toCharArray()
-                etPw.text?.clear()
-                etCon.text?.clear()
-
-                val btn = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                btn.isEnabled = false
-
-                Thread {
-                    try {
-                        VaultKeyManager.enroll(pwChars, ctx)
-                        runOnUiThread {
-                            dialog.dismiss()
-                            binding.bottomNavigation.selectedItemId = R.id.nav_vault
-                            onSuccess()
-                        }
-                    } catch (e: Exception) {
-                        runOnUiThread {
-                            btn.isEnabled = true
-                            android.widget.Toast.makeText(ctx,
-                                "Setup failed: ${e.message}",
-                                android.widget.Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }.start()
-            }
-    }
-
-    private fun showPasswordUnlockDialog(onSuccess: () -> Unit) {
-        val ctx = this
-        val content = layoutInflater.inflate(R.layout.dialog_vault_master_unlock, null)
-        val etPw = content.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etMasterUnlock)
-
-        val dialog = VaultDialogUi.builder(ctx)
-            .setTitle(R.string.vault_master_unlock_title)
-            .setView(content)
-            .setPositiveButton("Unlock", null)
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
-
-        VaultDialogUi.showStyled(dialog)
-        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-            .setOnClickListener {
-                val pwChars = etPw.text?.toString()?.toCharArray() ?: charArrayOf()
-                etPw.text?.clear()
-
-                val btn = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                btn.isEnabled = false
-
-                Thread {
-                    val ok = VaultKeyManager.unlockWithPassword(pwChars, ctx)
-                    runOnUiThread {
-                        if (ok) {
-                            VaultAuthManager.markUnlocked()
-                            LockoutCounter.reset(ctx)
-                            dialog.dismiss()
-                            binding.bottomNavigation.selectedItemId = R.id.nav_vault
-                            onSuccess()
-                        } else {
-                            btn.isEnabled = true
-                            LockoutCounter.recordFailure(ctx)
-                            android.widget.Toast.makeText(ctx,
-                                "Wrong password.",
-                                android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }.start()
-            }
+    private fun fragmentFor(itemId: Int): androidx.fragment.app.Fragment = when (itemId) {
+        R.id.nav_sms     -> SmsFragment.newInstance(null)
+        R.id.nav_vault   -> VaultFragment()
+        R.id.nav_network -> NetworkFragment()
+        R.id.nav_coach   -> HelpDeskFragment()
+        R.id.nav_report  -> ReportFragment()
+        else             -> SmsFragment.newInstance(null)
     }
 
     private fun showFragment(fragment: androidx.fragment.app.Fragment) {
@@ -366,73 +243,39 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun gateVaultThen(onSuccess: () -> Unit) {
-        val cooldownMs = LockoutCounter.cooldownRemainingMs(this)
-        if (cooldownMs > 0) {
-            android.widget.Toast.makeText(this,
-                "Too many attempts. Try again in ${cooldownMs / 1000}s.",
-                android.widget.Toast.LENGTH_LONG).show()
-            return
-        }
+    // ─── Session lock: Master Key on app open and on return from background ───
+    private var vaultTabCleared = false
 
-        if (!VaultKeyManager.isEnrolled(this)) {
-            showEnrollmentDialog(onSuccess)
-            return
-        }
-
-        if (!VaultAuthManager.canAuthenticate(this)) {
-            showPasswordUnlockDialog(onSuccess)
-            return
-        }
-
-        val cipher = try {
-            VaultKeyManager.getBioDecryptCipher(this)
-        } catch (_: Exception) {
-            showPasswordUnlockDialog(onSuccess)
-            return
-        }
-
-        RevocationCheck.checkInBackground(this)
-
-        VaultAuthManager.promptWithCryptoObject(
-            activity     = this,
-            cryptoObject = BiometricPrompt.CryptoObject(cipher),
-            onSuccess    = { result ->
-                val authCipher = result.cryptoObject?.cipher
-                if (authCipher != null && VaultKeyManager.unlockWithBiometric(authCipher, this)) {
-                    binding.bottomNavigation.selectedItemId = R.id.nav_vault
-                    onSuccess()
-                } else {
-                    showPasswordUnlockDialog(onSuccess)
-                }
-            },
-            onFallback = { showPasswordUnlockDialog(onSuccess) },
-            onError    = { code, msg ->
-                android.widget.Toast.makeText(this,
-                    "Auth error ($code): $msg",
-                    android.widget.Toast.LENGTH_LONG).show()
-            }
-        )
+    private fun onSessionUnlocked() {
+        val selected = binding.bottomNavigation.selectedItemId
+        if (vaultTabCleared && isVaultTab(selected)) showFragment(fragmentFor(selected))
+        vaultTabCleared = false
     }
 
-
-
-    override fun onResume() {
-        super.onResume()
-        resetIdleTimer()   // REM-005
-        val onVault = binding.bottomNavigation.selectedItemId == R.id.nav_vault
-        if (onVault && VaultAuthManager.shouldGate()) {
-            // Don't auto-prompt on resume — vault gate fires only when user
-            // explicitly taps the Vault tab. Just land on SMS quietly.
-            showFragment(SmsFragment.newInstance(null))
-            binding.bottomNavigation.selectedItemId = R.id.nav_sms
+    private fun lockSession() {
+        VaultAuthManager.markLocked()
+        if (isVaultTab(binding.bottomNavigation.selectedItemId)) {
+            // Drop the decrypted vault UI; it is rebuilt after the next unlock.
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, androidx.fragment.app.Fragment())
+                .commitAllowingStateLoss()
+            vaultTabCleared = true
         }
+        loginScreen.show(animate = false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (::loginScreen.isInitialized && loginScreen.isShowing) loginScreen.focusInput()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations && !loginScreen.authInProgress) lockSession()
     }
 
     override fun onPause() {
         super.onPause()
-        idleHandler.removeCallbacks(idleRunnable)   // REM-005 — don't burn timer in bg
-        VaultAuthManager.markLocked()
         startupSound?.release()
         startupSound = null
     }

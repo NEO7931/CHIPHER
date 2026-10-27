@@ -7,13 +7,11 @@ import androidx.fragment.app.FragmentActivity
 
 object VaultAuthManager {
 
-    private const val SESSION_WINDOW_MS = 3 * 60 * 1000L
-
+    // The session lasts until markLocked(): the app locks when it leaves the foreground, not on a timer.
     @Volatile private var lastUnlockMs: Long = 0L
 
     fun isUnlocked(): Boolean =
-        VaultKeyManager.isUnlocked() &&
-                (System.currentTimeMillis() - lastUnlockMs < SESSION_WINDOW_MS)
+        VaultKeyManager.isUnlocked() && lastUnlockMs != 0L
 
     fun markUnlocked() { lastUnlockMs = System.currentTimeMillis() }
 
